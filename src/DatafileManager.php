@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Cupparis\Datafile;
+namespace Gecche\Cupparis\Datafile;
 
 /*
  * TODO: 1 - aggiungere gli extrafields 2 - eventualmente migliorare i parmaetri dei checks dando la possibilta' di passare l'intero datafile ad esempio con una stringa apposita tipo :datafile 3 - Eventualmente poter decidere l'ordine di checks e transforms

@@ -5,7 +5,7 @@
  * Date: 25/02/15
  * Time: 14:28
  */
-namespace Cupparis\Datafile;
+namespace Gecche\Cupparis\Datafile;
 
 interface DatafileProviderInterface
 {

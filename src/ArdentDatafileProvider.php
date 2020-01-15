@@ -1,6 +1,6 @@
 <?php
 
-namespace Cupparis\Datafile;
+namespace Gecche\Cupparis\Datafile;
 
 use \Cupparis\Ardent\Ardent;
 use Illuminate\Support\Facades\Config;

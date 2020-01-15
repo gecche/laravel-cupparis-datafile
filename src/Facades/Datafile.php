@@ -1,4 +1,4 @@
-<?php namespace Cupparis\Datafile\Facades;
+<?php namespace Gecche\Cupparis\Datafile\Facades;
 
 use Illuminate\Support\Facades\Facade as Facade;
 

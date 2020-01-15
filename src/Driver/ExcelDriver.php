@@ -1,10 +1,10 @@
-<?php namespace Cupparis\Datafile\Driver;
+<?php namespace Gecche\Cupparis\Datafile\Driver;
 
 
-use Cupparis\Datafile\ArdentDatafileProvider;
+use Gecche\Cupparis\Datafile\ArdentDatafileProvider;
 use Cupparis\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Log;
-use Cupparis\Datafile\Driver\ExcelFilter\ChunksReadFilter;
+use Gecche\Cupparis\Datafile\Driver\ExcelFilter\ChunksReadFilter;
 
 require_once(base_path('vendor/phpoffice/phpexcel/Classes/PHPExcel.php'));
 

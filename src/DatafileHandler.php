@@ -1,14 +1,4 @@
-<?php namespace Cupparis\Datafile;
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU Library General Public License as published by
-# the Free Software Foundation either version 2 of the License, or
-
-//=====================================================================================================================
-//classdef  CSVHandler 0.91 :: CSV Handling Wrapper
-//=====================================================================================================================
-#
-#
-# Copyright (C) 2005 by Andreas M�ller
+<?php namespace Gecche\Cupparis\Datafile;
 
 use Illuminate\Support\Facades\Log;
 

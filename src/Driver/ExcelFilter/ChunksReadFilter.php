@@ -1,4 +1,4 @@
-<?php namespace Cupparis\Datafile\Driver\ExcelFilter;
+<?php namespace Gecche\Cupparis\Datafile\Driver\ExcelFilter;
 
 /**
  * Created by PhpStorm.

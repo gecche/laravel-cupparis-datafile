@@ -1,13 +1,13 @@
-<?php namespace Cupparis\Datafile;
+<?php namespace Gecche\Cupparis\Datafile;
 
-use Cupparis\Datafile\Facades\Datafile;
-use Cupparis\App\Queue\MainQueue;
+use Gecche\Cupparis\Datafile\Facades\Datafile;
+use Gecche\Cupparis\Queue\MainQueue;
 
 use Illuminate\Support\Facades\Config;
 use Exception;
 use Illuminate\Support\Facades\Log;
 
-class DatafileQueue extends MainQueue{
+class DatafileQueue extends MainQueue {
 
 
     protected $datafileproviders_namespace;

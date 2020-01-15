@@ -1,6 +1,6 @@
 <?php
 
-namespace Cupparis\Datafile;
+namespace Gecche\Cupparis\Datafile;
 
 use Closure;
 use \Cupparis\Ardent\Ardent;
