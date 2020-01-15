@@ -1,0 +1,50 @@
+{
+    "name": "gecche/laravel-cupparis-datafile",
+    "description": "Gestione dei datafile csv e excel",
+    "keywords": ["laravel", "cupparis"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Giacomo Terreni",
+            "email": "giacomo.terreni@gmail.com"
+        }
+    ],
+    "require": {
+        "laravel/framework": "5.5.*",
+        "gecche/laravel-cupparis-helpers": "v1.1.*",
+        "gecche/laravel-breeze": "v1.1.x-dev",
+        "gecche/laravel-cupparis-queue": "v1.1.x-dev"
+    },
+    "require-dev": {
+        "mockery/mockery": "~1.0",
+        "phpunit/phpunit": "~6.0",
+        "codedungeon/phpunit-result-printer": "^0.4.4",
+        "orchestra/testbench": "~3.5.0"
+    },
+    "autoload": {
+        "classmap": [
+
+        ],
+        "psr-4": {
+            "Gecche\\Cupparis\\Datafile\\": "src"
+        },
+        "files": [
+
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+
+            ]
+        }
+    }
+}
