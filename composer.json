@@ -14,7 +14,9 @@
         "gecche/laravel-cupparis-helpers": "v1.1.*",
         "gecche/laravel-dbhelper": "v1.1.x-dev",
         "gecche/laravel-breeze": "v1.1.x-dev",
-        "gecche/laravel-cupparis-queue": "v1.1.x-dev"
+        "gecche/laravel-cupparis-queue": "v1.1.x-dev",
+        "box/spout": "3.*"
+
     },
     "require-dev": {
         "mockery/mockery": "~1.0",
