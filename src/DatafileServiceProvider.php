@@ -29,7 +29,7 @@ class DatafileServiceProvider extends ServiceProvider {
 	{
         $this->app->singleton('datafile', function($app)
         {
-            return new DatafileManager($this->app->events);
+            return new DatafileManager($app->events);
         });
 	}
 

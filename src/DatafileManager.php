@@ -6,16 +6,16 @@ namespace Gecche\Cupparis\Datafile;
 /*
  * TODO: 1 - aggiungere gli extrafields 2 - eventualmente migliorare i parmaetri dei checks dando la possibilta' di passare l'intero datafile ad esempio con una stringa apposita tipo :datafile 3 - Eventualmente poter decidere l'ordine di checks e transforms
  */
-use App\Events\JobProgress;
+
+
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Facades\Log;
-use \LaravelBook\Ardent\Ardent;
-use Illuminate\Support\MessageBag;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Event;
+
 use Illuminate\Support\Facades\DB;
 use Exception;
-class DatafileManager {
+
+class DatafileManager
+{
     /*
      * array del tipo di datafile, ha la seguente forma:
      * array( 'headers' => array( 'header1' => array( 'datatype' => 'string|int|data...', (default string) 
@@ -41,40 +41,21 @@ class DatafileManager {
     public $filename = null;
     protected $_eof = false;
     public $datafile_id = null;
-   public $job_id = null;
-   public $user_id = 0;
+    public $job_id = null;
+    public $user_id = 0;
 
-    protected $_table = null;
-
-    protected $_type = false;
-    protected $_name = null;
-    protected $_logFile = true;
-    protected $_logFileSeparator = "|";
-    // campi predefiniti, necessari per il funzionamento del modello
-    public $row = null;
-    public $update_rows = null;
-    public $load_rows = null;
-    public $datafile_loaded = null;
-    public $datafile_errors = array ();
-    public $datafile_has_errors = false;
-    public $blocking = false;
-    public $headers = null;
-    public $row_counter = 0;
-    protected $_separator = ";";
     // protected static $_datafile_max_size = max_size;
-    protected $_pkfield = 'id';
-    protected $_pkvalue = 0;
-    protected $_modelName = false;
-    protected $_updateAlert = false;
     protected $inputEncoding = 'UTF-8';
     protected $outputEncoding = 'UTF-8';
-    protected $_formValidation = NULL; // array validazione associato al modello
-    protected $_formPost = array (); // valori in post nella form dell'oggetto
-    protected $maxBuffer = 1000; // in bytes;
+
+    protected $_formPost = array(); // valori in post nella form dell'oggetto
 
     protected $events = null;
 
-    public function __construct(Dispatcher $dispatcher) {
+
+
+    public function __construct(Dispatcher $dispatcher)
+    {
         $this->events = $dispatcher;
     }
 
@@ -168,33 +149,35 @@ class DatafileManager {
         $this->job_id = $job_id;
     }
 
-    public function init($datafile_id,DatafileProviderInterface $datafileProvider,$filename = null,$job_id = null) {
+    public function init($datafile_id, DatafileProviderInterface $datafileProvider, $filename = null, $job_id = null)
+    {
 
         $this->setJobId($job_id);
         $this->setDatafileId($datafile_id);
         $this->setDatafileProvider($datafileProvider);
 
-        Log::info('SET fILENAME INIT: '.$filename);
+        Log::info('SET fILENAME INIT: ' . $filename);
         if ($filename) {
             $this->setFilename($filename);
         }
     }
 
-    public function getNumRows() {
+    public function getNumRows()
+    {
         return $this->datafileProvider->getNumRows();
     }
 
 
-
-    public function loadPart($initRow = 0) {
+    public function loadPart($initRow = 0)
+    {
 
         //Il metodo direttamente manda le eccezioni.
         $this->datafileProvider->checkHeaders();
 
         $loadPartReturn = $this->datafileProvider->loadPart($initRow);
 
-        if (! is_array ( $loadPartReturn ))
-            throw new Exception ( "load error" );
+        if (!is_array($loadPartReturn))
+            throw new Exception ("load error");
 
         $this->setEof($loadPartReturn['eof']);
 
@@ -203,75 +186,84 @@ class DatafileManager {
 //        Log::info("RORAA: ".print_r($datafile,true));
         $nextLine = $loadPartReturn['nextLine'];
 
-        for($i = 0; $i < $loadedRows; $i ++) {
-            Log::info("DATALINELOAD: ".$i);
+        for ($i = 0; $i < $loadedRows; $i++) {
+            Log::info("DATALINELOAD: " . $i);
 
             $row = $datafile[$i];
-            $realIndex = $this->setRealIndex($i,$initRow,$row);
+            $realIndex = $this->setRealIndex($i, $initRow, $row);
             if ($this->inputEncoding != $this->outputEncoding) {
                 foreach ($row as $fieldKey => $fieldValue) {
-                    $row[$fieldKey] = iconv ( $this->inputEncoding, $this->outputEncoding . '//IGNORE', $fieldValue );
+                    $row[$fieldKey] = iconv($this->inputEncoding, $this->outputEncoding . '//IGNORE', $fieldValue);
                 }
             }
 
-            $this->datafileProvider->saveDatafileRow($row,$realIndex);
+            $this->datafileProvider->saveDatafileRow($row, $realIndex);
 
         }
 
         return $nextLine;
     }
 
-    protected function setRealIndex($relativeChunkIndex,$initChunkIndex,$row) {
-        return $relativeChunkIndex + $initChunkIndex + array_get($row,'shiftrow',0);
+    protected function setRealIndex($relativeChunkIndex, $initChunkIndex, $row)
+    {
+        return $relativeChunkIndex + $initChunkIndex + array_get($row, 'shiftrow', 0);
     }
 
-    public function beforeLoad() {
+    public function beforeLoad()
+    {
         $this->datafileProvider->beforeLoad();
     }
 
-    public function afterLoad() {
+    public function afterLoad()
+    {
         $this->datafileProvider->afterLoad();
     }
-    public function beforeLoadPart($initRow) {
+
+    public function beforeLoadPart()
+    {
         $this->datafileProvider->beforeLoadPart();
     }
 
-    public function afterLoadPart($initRow) {
+    public function afterLoadPart($initRow)
+    {
         $this->datafileProvider->afterLoadPart();
 
         $rows = $this->datafileProvider->getDatafileNumRows();
-        $this->fireProgress($initRow,$rows);
+        $this->fireProgress($initRow, $rows);
     }
 
-    public function beforeSave() {
+    public function beforeSave()
+    {
         $this->datafileProvider->beforeSave();
     }
 
-    public function afterSave() {
+    public function afterSave()
+    {
         $this->datafileProvider->afterSave();
     }
 
-    public function save() {
+    public function save()
+    {
 
 
         $totalRows = $this->datafileProvider->countRows();
         $block = 50;
         $index = 0;
         $firstRow = $this->datafileProvider->getFirstRow();
-        
-        echo 'save : begin '.$firstRow . " total rows " . $totalRows . "\n";
 
-        Log::info("SAVEROWS: ".$totalRows.'-'.$index.'-'.$firstRow);
+        echo 'save : begin ' . $firstRow . " total rows " . $totalRows . "\n";
+
+        Log::info("SAVEROWS: " . $totalRows . '-' . $index . '-' . $firstRow);
         //TODO: cercare un errore se bloccante
 
         DB::beginTransaction();
         //TODO: transazione
         try {
             while ($index < $totalRows) {
-                $this->datafileProvider->saveRow($firstRow+$index);
+                $this->datafileProvider->saveRow($firstRow + $index);
                 if ($index % $block == 0) {
-                    $this->fireProgress($firstRow+$index, $totalRows);
-                    echo "row " . ($firstRow+$index) .  "\n";
+                    $this->fireProgress($firstRow + $index, $totalRows);
+                    echo "row " . ($firstRow + $index) . "\n";
                 }
                 $index++;
             }
@@ -285,26 +277,29 @@ class DatafileManager {
 
     }
 
-    public function fireProgress($index,$rows) {
+    public function fireProgress($index, $rows)
+    {
         if (!$this->job_id)
             return;
-        $progress = floor(($index/$rows) * 100);
+        $progress = floor(($index / $rows) * 100);
         if ($progress > 100) {
             $progress = 100;
         }
 
 //        Log::info('JOBPROGRESSONFIRE: '.$this->job_id);
-        if (isset($this->events))
-        {
-           $this->events->fire('job.progress', [$this->job_id,$progress]);
+        if (isset($this->events)) {
+            $this->events->fire('job.progress', [$this->job_id, $progress]);
         }
-        
+
     }
 
-    public function setFormPost($form) {
+    public function setFormPost($form)
+    {
         $this->_formPost = $form;
     }
-    public function getFormPost() {
+
+    public function getFormPost()
+    {
         return $this->_formPost;
     }
 
