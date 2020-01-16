@@ -47,7 +47,10 @@
         "laravel": {
             "providers": [
                 "Gecche\\Cupparis\\Datafile\\DatafileServiceProvider"
-            ]
+            ],
+            "aliases": {
+                "Datafile": "Gecche\\Cupparis\\Datafile\\Facades\\Datafile"
+            }
         }
     }
 }
