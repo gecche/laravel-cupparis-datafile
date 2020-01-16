@@ -1,18 +1,14 @@
 <?php
 
-namespace Gecche\Cupparis\Datafile;
+namespace Gecche\Cupparis\Datafile\Breeze;
 
-use \Cupparis\Ardent\Ardent;
 use Gecche\Breeze\Breeze;
+use Gecche\Cupparis\Datafile\DatafileProviderInterface;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\MessageBag;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\DB;
 use Exception;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Validator;
 
 class BreezeDatafileProvider implements DatafileProviderInterface
 {
@@ -64,7 +60,7 @@ class BreezeDatafileProvider implements DatafileProviderInterface
     public function __construct()
     {
 
-        $this->config = Config::get('datafile',[]);
+        $this->config = Config::get('datafile', []);
 
 
         $reflector = new \ReflectionClass($this->modelDatafileName);
@@ -241,8 +237,8 @@ class BreezeDatafileProvider implements DatafileProviderInterface
         $model->setDatafileIdValue($this->getDatafileId());
         $model->setRowIndexValue($index);
 
-        $model->saveDatafile();
-        $validator = $model->getValidator();
+        $validator = $model->getDatafileValidator();
+        $model->save();
         //echo "$modelDatafileName validatore = $validator\n";
 //        Log::info("DATAFILE ERRORS: ".$index);
         $this->setDatafileErrors($index, $model, $validator);
@@ -285,7 +281,7 @@ class BreezeDatafileProvider implements DatafileProviderInterface
         return true;
     }
 
-    public function associateRow(ArdentDatafile $modelDatafile)
+    public function associateRow(BreezeDatafile $modelDatafile)
     {
         return new $this->modelTargetName;
     }
@@ -295,7 +291,7 @@ class BreezeDatafileProvider implements DatafileProviderInterface
         return $row;
     }
 
-    public function formatRow(ArdentDatafile $modelDatafile)
+    public function formatRow(BreezeDatafile $modelDatafile)
     {
         $values = $modelDatafile->toArray();
         foreach ($this->excludeFromFormat as $field) {
@@ -355,10 +351,9 @@ class BreezeDatafileProvider implements DatafileProviderInterface
         $model->setDatafileIdValue($this->getDatafileId());
         $model->setRowIndexValue($index);
 
-        $model->saveDatafile();
-        $validator = $model->getValidator();
+        $model->save();
         //echo "$modelDatafileName validatore = $validator\n";
-        $this->setDatafileErrors($index, $model, $validator);
+        $this->setDatafileErrors($index, $model, $model->getValidator());
 
 
         $this->finalizeDatafileErrors();
@@ -417,41 +412,41 @@ class BreezeDatafileProvider implements DatafileProviderInterface
         $this->finalizeDatafileErrors();
     }
 
-    public function setDatafileErrors($index, $model, $validator)
+    public function setDatafileErrors($index, $model, Validator $validator)
     {
-        if (!$validator) {
-            throw new \Exception("ArdentDatafileProvider::setDatafileErrors   Attenzione VALIDATORE NULL ");
-        }
-
         $datafileErrorName = $this->datafileModelErrorName;
         //CANCELLA errori gia' presenti assocaiti a quella riga
         $model->errors()->delete();
 
-        $data = $validator->getData();
-        $failedRules = $validator->failed();
+        if (!$validator->passes()) {
+
+            $data = $validator->getData();
+            $failedRules = $validator->failed();
 
 //        Log::info('FAILED RULES');
 //        Log::info(print_r($validator->getRules(),true));
 //        Log::info(print_r($data,true));
 //        Log::info(print_r($failedRules,true));
 
-        foreach ($failedRules as $field_name => $rule) {
-            foreach ($rule as $error_name => $ruleParameters) {
+            foreach ($failedRules as $field_name => $rule) {
+                foreach ($rule as $error_name => $ruleParameters) {
 
-                $datafileError = new $datafileErrorName(array(
-                    'datafile_id' => $this->getDatafileId(),
-                    'field_name' => $field_name,
-                    'error_name' => $error_name,
-                    'type' => 'error', //per ora sono tutti error (poi ci si puo' mettere ad esempio warning, vedremo come)
-                    'template' => 0, //per ora non ci sono templates, forse questo va a sparire
-                    'param' => NULL, //questo sempre null, eventualmnete va aggiornato alla fine del primo caricamento delle righe
-                    'value' => $data[$field_name],
-                    'row' => $index,
-                ));
-                $model->errors()->save($datafileError);
+                    $datafileError = new $datafileErrorName(array(
+                        'datafile_id' => $this->getDatafileId(),
+                        'field_name' => $field_name,
+                        'error_name' => $error_name,
+                        'type' => 'error', //per ora sono tutti error (poi ci si puo' mettere ad esempio warning, vedremo come)
+                        'template' => 0, //per ora non ci sono templates, forse questo va a sparire
+                        'param' => NULL, //questo sempre null, eventualmnete va aggiornato alla fine del primo caricamento delle righe
+                        'value' => $data[$field_name],
+                        'row' => $index,
+                    ));
+                    $model->errors()->save($datafileError);
+                }
+
             }
-
         }
+
     }
 
     public function loadPart($initRow = 0)
@@ -597,7 +592,8 @@ class BreezeDatafileProvider implements DatafileProviderInterface
     public function getTemplateFile($path, $filename = null)
     {
         if (is_null($filename)) {
-            $relativeName = substr($this->modelDatafileName, strlen($this->datafilemodels_namespace));
+
+            $relativeName = snake_case(substr($this->modelDatafileName,strrpos($this->modelDatafileName,"\\")+1));
             $filename = 'template_' . $relativeName;
         }
 
