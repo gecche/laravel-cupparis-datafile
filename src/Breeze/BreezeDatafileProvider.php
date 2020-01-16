@@ -3,6 +3,7 @@
 namespace Gecche\Cupparis\Datafile\Breeze;
 
 use Gecche\Breeze\Breeze;
+use Gecche\Cupparis\Datafile\DatafileHandler;
 use Gecche\Cupparis\Datafile\DatafileProviderInterface;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
@@ -108,7 +109,11 @@ class BreezeDatafileProvider implements DatafileProviderInterface
      */
     public function getFileProperties()
     {
-        return $this->fileProperties;
+        $fileProperties = $this->fileProperties;
+        if (!array_key_exists('inputEncoding',$fileProperties)) {
+            $fileProperties['inputEncoding'] = $this->inputEncoding;
+        }
+        return $fileProperties;
     }
 
     /**
@@ -199,6 +204,15 @@ class BreezeDatafileProvider implements DatafileProviderInterface
     {
         $this->modelTargetName = $modelTargetName;
     }
+
+    /**
+     * @return string
+     */
+    public function getInputEncoding()
+    {
+        return $this->inputEncoding;
+    }
+
 
 
     public function isRowEmpty($row)

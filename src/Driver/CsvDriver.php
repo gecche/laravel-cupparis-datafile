@@ -1,7 +1,5 @@
 <?php namespace Gecche\Cupparis\Datafile\Driver;
 
-
-use Gecche\Cupparis\Datafile\ArdentDatafileProvider;
 use Illuminate\Support\Facades\Log;
 
 class CsvDriver extends DatafileDriver
