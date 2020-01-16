@@ -86,7 +86,7 @@ class DatafileQueue extends MainQueue {
 			}
 		}
 		if ($job_type == "datafile_save") {
-		    if (!Arr::get($this->data, 'csv_load_id',false)) {
+		    if (!Arr::get($this->data, 'datafile_load_id',false)) {
 		        throw new Exception("Datafile id non definito!");
 		    }
 		}

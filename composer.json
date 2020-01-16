@@ -46,7 +46,7 @@
     "extra": {
         "laravel": {
             "providers": [
-
+                "Gecche\\Cupparis\\Datafile\\DatafileServiceProvider"
             ]
         }
     }
