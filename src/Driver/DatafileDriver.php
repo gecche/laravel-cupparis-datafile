@@ -1,6 +1,6 @@
 <?php namespace Gecche\Cupparis\Datafile\Driver;
 
-use Gecche\Cupparis\Datafile\ArdentDatafileProvider;
+use Gecche\Cupparis\Datafile\Breeze\BreezeDatafileProvider;
 use Illuminate\Support\Facades\Log;
 
 abstract class DatafileDriver {
@@ -44,7 +44,7 @@ abstract class DatafileDriver {
         $this->manageFileProperties($fileProperties);
     }
 
-	public function __construct(ArdentDatafileProvider $provider) {		//Constructor
+	public function __construct(BreezeDatafileProvider $provider) {		//Constructor
 		$this->provider = $provider;
         $this->setDataFile($this->provider->getFilename());
 	}

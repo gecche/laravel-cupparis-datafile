@@ -12,17 +12,13 @@ class DatafileQueue extends MainQueue {
     public function load($job, $data) {
 		$this->jobStart ($job,$data, 'datafile_load' );
 		try {
-			$temp_dir = storage_temp_path();
-//			echo $temp_dir;
-			if (! is_dir ( $temp_dir )) {
-				mkdir ( $temp_dir );
-			}
+            $this->validateData("datafile_load");
 
-            $this->_validateData("datafile_load");
+            $filename = Arr::get($this->data,'fileName');
 
-//			Log::info('Input data: '. implode(';',$this->data));
-
-			$filename = $temp_dir . "/" . $this->data['fileName'];
+            if (Arr::get($this->data,'fileInTempFolder',true)) {
+                $filename = $this->filenameToTempFolder($filename);
+            }
 
             $datafileProviderName = Arr::get($this->data, 'datafileProviderName');
             $datafileProvider = new $datafileProviderName;
@@ -34,7 +30,7 @@ class DatafileQueue extends MainQueue {
             Datafile::init($this->acQueue->getKey(),$datafileProvider,$filename,$this->acQueue->getKey());
             //Datafile::$user_id = $this->data['userId'];
             Datafile::beforeLoad();
-			$initRow = 0;
+			$initRow = 1;
 			do {
                 Datafile::beforeLoadPart($initRow);
 				$nextInitRow = Datafile::loadPart($initRow);
@@ -58,7 +54,7 @@ class DatafileQueue extends MainQueue {
 
         try {
 
-            $this->_validateData("datafile_save");
+            $this->validateData("datafile_save");
 
             $datafileProviderName = Arr::get($this->data, 'datafileProviderName');
 
@@ -78,7 +74,7 @@ class DatafileQueue extends MainQueue {
         }
 	}
 	
-	protected function _validateData($job_type) {
+	protected function validateData($job_type) {
 		
 		if ($job_type == "datafile_load") {
 			if (!Arr::get($this->data, 'fileName',false)) {
@@ -99,5 +95,17 @@ class DatafileQueue extends MainQueue {
 		}
 	}
 
+
+	protected function filenameToTempFolder($filename,$userId) {
+        $temp_dir = storage_temp_path();
+//			echo $temp_dir;
+        if (! is_dir ( $temp_dir )) {
+            mkdir ( $temp_dir );
+        }
+//			Log::info('Input data: '. implode(';',$this->data));
+
+        return rtrim($temp_dir,"/") . "/" . $filename;
+
+    }
 
 }

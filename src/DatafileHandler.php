@@ -49,7 +49,7 @@ class DatafileHandler {
 
 		$prefixClassName = studly_case($driverType);
 
-		$className = "\\Cupparis\\Datafile\\Driver\\" . $prefixClassName . 'Driver';
+		$className = "Gecche\\Cupparis\\Datafile\\Driver\\" . $prefixClassName . 'Driver';
 
 		return new $className($this->provider);
 

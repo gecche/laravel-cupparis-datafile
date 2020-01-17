@@ -118,9 +118,9 @@ class DatafileManager
     public function isEof()
     {
         if ($this->_eof) {
-            Log::info('EOFTRUE');
+//            Log::info('EOFTRUE');
         } else {
-            Log::info('EOFFALSE');
+//            Log::info('EOFFALSE');
         }
         return $this->_eof;
     }
@@ -156,7 +156,7 @@ class DatafileManager
         $this->setDatafileId($datafile_id);
         $this->setDatafileProvider($datafileProvider);
 
-        Log::info('SET fILENAME INIT: ' . $filename);
+//        Log::info('SET fILENAME INIT: ' . $filename);
         if ($filename) {
             $this->setFilename($filename);
         }
@@ -168,7 +168,7 @@ class DatafileManager
     }
 
 
-    public function loadPart($initRow = 0)
+    public function loadPart($initRow = 1)
     {
 
         //Il metodo direttamente manda le eccezioni.
@@ -187,7 +187,7 @@ class DatafileManager
         $nextLine = $loadPartReturn['nextLine'];
 
         for ($i = 0; $i < $loadedRows; $i++) {
-            Log::info("DATALINELOAD: " . $i);
+//            Log::info("DATALINELOAD: " . $i);
 
             $row = $datafile[$i];
             $realIndex = $this->setRealIndex($i, $initRow, $row);
@@ -253,7 +253,7 @@ class DatafileManager
 
         echo 'save : begin ' . $firstRow . " total rows " . $totalRows . "\n";
 
-        Log::info("SAVEROWS: " . $totalRows . '-' . $index . '-' . $firstRow);
+//        Log::info("SAVEROWS: " . $totalRows . '-' . $index . '-' . $firstRow);
         //TODO: cercare un errore se bloccante
 
         DB::beginTransaction();

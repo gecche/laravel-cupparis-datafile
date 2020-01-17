@@ -45,14 +45,14 @@ class CsvDriver extends DatafileDriver
         $fp = fopen($this->dataFile, "r");
 
         $startingChunkLine = max($this->startingDataLine, $fromLine);
-        Log::info("INFOLINES: ".$this->startingDataLine. ' ' . $startingChunkLine. ' '. $fromLine);
+//        Log::info("INFOLINES: ".$this->startingDataLine. ' ' . $startingChunkLine. ' '. $fromLine);
 
         for ($i = 0; $i < $startingChunkLine; $i++) {
             if (feof($fp)) {
                 break;
             }
             $string = fgets($fp);
-            Log::info($string);
+//            Log::info($string);
         }
 
         $eof = feof($fp);
@@ -68,16 +68,16 @@ class CsvDriver extends DatafileDriver
 
             $DataLine = null;
             while (($DataLine = $this->getLine($fp)) !== false) {
-                Log::info("DATALINE: ".print_r($DataLine,true));
+//                Log::info("DATALINE: ".print_r($DataLine,true));
 
                 if (!is_null($this->endingDataLine) && $currentLine > $this->endingDataLine) {
-                    Log::info("DATALINE1: ".$this->endingDataLine." - ".$currentLine);
+//                    Log::info("DATALINE1: ".$this->endingDataLine." - ".$currentLine);
                     $eof = true;
                     break;
                 }
                 //Sono arrivato alla riga finale del chunk
                 if ($toLine > 0 && $this->chunkLinesNumber == ($toLine - $startingChunkLine)) {
-                    Log::info("DATALINE2: ".print_r($DataLine,true));
+//                    Log::info("DATALINE2: ".print_r($DataLine,true));
                     break;
                 }
 
@@ -90,7 +90,7 @@ class CsvDriver extends DatafileDriver
 
                 if ($checkEmptyLine && count(array_filter($Item)) == 0) {
                     if ($this->stopAtEmptyLine) {
-                        Log::info("DATALINE3: ".print_r($DataLine,true));
+//                        Log::info("DATALINE3: ".print_r($DataLine,true));
                         $eof = true;
                         break;
                     }
@@ -169,7 +169,7 @@ class CsvDriver extends DatafileDriver
 
     protected function getLine($fp) {
         $array = fgetcsv($fp, $this->maxLineSize, $this->separator);
-        Log::info("FGETCSV: ".print_r($array,true));
+//        Log::info("FGETCSV: ".print_r($array,true));
         return $array;
     }
 

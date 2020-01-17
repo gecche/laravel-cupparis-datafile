@@ -1,8 +1,6 @@
 <?php namespace Gecche\Cupparis\Datafile\Driver;
 
 
-use Gecche\Cupparis\Datafile\ArdentDatafileProvider;
-use Cupparis\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Log;
 use Gecche\Cupparis\Datafile\Driver\ExcelFilter\ChunksReadFilter;
 
@@ -158,7 +156,7 @@ class ExcelDriver extends DatafileDriver
         $Item = [];
 
         $startingChunkLine = max($this->startingDataLine, $fromLine);
-        Log::info("INFOLINES: " . $this->startingDataLine . ' ' . $startingChunkLine . ' ' . $fromLine . ' - ENDING LINE: ' . $this->endingDataLine . ' -- ' . $toLine);
+//        Log::info("INFOLINES: " . $this->startingDataLine . ' ' . $startingChunkLine . ' ' . $fromLine . ' - ENDING LINE: ' . $this->endingDataLine . ' -- ' . $toLine);
 
         if ($toLine < $startingChunkLine) {
             $toLine = $this->endingDataLine;

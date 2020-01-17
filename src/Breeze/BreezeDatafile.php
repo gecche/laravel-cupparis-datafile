@@ -41,7 +41,7 @@ class BreezeDatafile extends Breeze {
 	 */
 	public function errors()
 	{
-		return $this->morphMany('App\Datafilemodels\Error', 'datafile_table');
+		return $this->morphMany(DatafileError::class, 'datafile_table');
 	}
 
     /**
@@ -191,7 +191,7 @@ class BreezeDatafile extends Breeze {
      * NUOVO METOOD QUESTO E' OK :)
      */
 
-    public static function getErrorModelName() {
+    public static function getErrorsModelName() {
         $relationData = static::getRelationsData();
 
         return Arr::get(Arr::get($relationData,'errors',[]), 'related');

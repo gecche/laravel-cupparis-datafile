@@ -265,6 +265,12 @@ class BreezeDatafileProvider implements DatafileProviderInterface
         $modelDatafileName = $this->modelDatafileName;
         $modelDatafile = new $modelDatafileName;
 
+//        echo $modelDatafile . "\n";
+//        echo $modelDatafile->getDatafileIdField() . "\n";
+//        echo $this->getDatafileId() . "\n";
+//        echo $modelDatafile->getRowIndexField() . "\n";
+//        echo $index . "\n";
+
         $modelDatafile = $modelDatafileName::where($modelDatafile->getDatafileIdField(), '=', $this->getDatafileId())
             ->where($modelDatafile->getRowIndexField(), '=', $index)->first();
 
@@ -463,7 +469,7 @@ class BreezeDatafileProvider implements DatafileProviderInterface
 
     }
 
-    public function loadPart($initRow = 0)
+    public function loadPart($initRow = 1)
     {
 
         $endRow = $initRow + $this->chunkRows;
@@ -510,10 +516,12 @@ class BreezeDatafileProvider implements DatafileProviderInterface
 
 
         $datafileErrorName = $this->datafileModelErrorName;
-        $doubleDatafileErrors = $datafileErrorName::where('datafile_id', '=', $this->getDatafileId())
+        $doubleDatafileErrors = $datafileErrorName::select(['error_name','field_name','value'])
+            ->where('datafile_id', '=', $this->getDatafileId())
             ->whereIn('error_name', $doubleDatafileErrorNames)
             ->groupBy('error_name')
             ->groupBy('field_name')
+            ->groupBy('value')
             ->get();
 
         $modelDatafileName = $this->modelDatafileName;
@@ -537,7 +545,7 @@ class BreezeDatafileProvider implements DatafileProviderInterface
                     ->where('value', '=', $columnValue)
                     ->delete();
             }
-            $modelRows = $models->lists('row')->all();
+            $modelRows = $models->pluck('row')->all();
 
             if (count($models) > 1) {
                 foreach ($models as $currModel) {
