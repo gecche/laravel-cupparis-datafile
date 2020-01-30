@@ -60,6 +60,7 @@ class DatafileQueue extends MainQueue {
             $this->validateData("datafile_save");
 
             $datafileProviderName = Arr::get($this->data, 'datafileProviderName');
+            $datafileProviderName = $this->resolveProviderName($datafileProviderName);
 
             $datafileProvider = new $datafileProviderName;
             $datafileProvider->formPost = $this->data;
