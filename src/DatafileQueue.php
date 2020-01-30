@@ -5,6 +5,8 @@ use Gecche\Cupparis\Queue\MainQueue;
 
 use Illuminate\Support\Arr;
 use Exception;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 
 class DatafileQueue extends MainQueue {
@@ -17,10 +19,11 @@ class DatafileQueue extends MainQueue {
             $filename = Arr::get($this->data,'fileName');
 
             if (Arr::get($this->data,'fileInTempFolder',true)) {
-                $filename = $this->filenameToTempFolder($filename);
+                $filename = $this->filenameToTempFolder($filename,Arr::get($data,'userId'));
             }
 
             $datafileProviderName = Arr::get($this->data, 'datafileProviderName');
+            $datafileProviderName = $this->resolveProviderName($datafileProviderName);
             $datafileProvider = new $datafileProviderName;
 
 //            Log::info('Datafile provider name: '. $datafileProviderName);
@@ -97,6 +100,7 @@ class DatafileQueue extends MainQueue {
 
 
 	protected function filenameToTempFolder($filename,$userId) {
+        Auth::loginUsingId($userId);
         $temp_dir = storage_temp_path();
 //			echo $temp_dir;
         if (! is_dir ( $temp_dir )) {
@@ -108,4 +112,8 @@ class DatafileQueue extends MainQueue {
 
     }
 
+    protected function resolveProviderName($datafileProviderName) {
+        $providerInConfig = Arr::get(Config::get('datafile.providers',[]),$datafileProviderName);
+        return $providerInConfig ?: $datafileProviderName;
+    }
 }
