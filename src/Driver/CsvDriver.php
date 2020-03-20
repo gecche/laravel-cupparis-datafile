@@ -1,6 +1,7 @@
 <?php namespace Gecche\Cupparis\Datafile\Driver;
 
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Arr;
 
 class CsvDriver extends DatafileDriver
 {
@@ -84,7 +85,7 @@ class CsvDriver extends DatafileDriver
 
                 $j = 0;
                 for ($i = $this->startingColumn; $i < $maxColumn; $i++) {
-                    $Item[$this->headerData[$j]] = array_get($DataLine, $i, '');
+                    $Item[$this->headerData[$j]] = Arr::get($DataLine, $i, '');
                     $j++;
                 }
 
@@ -144,7 +145,7 @@ class CsvDriver extends DatafileDriver
         }
 
         for ($i = $this->startingColumn;$i<$endingColumn;$i++) {
-            $this->headerData[] = array_get($headerLine,$i,'');
+            $this->headerData[] = Arr::get($headerLine,$i,'');
         }
 
         fclose($fp);

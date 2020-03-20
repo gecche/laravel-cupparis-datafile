@@ -11,6 +11,8 @@ namespace Gecche\Cupparis\Datafile;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Facades\Log;
 
+use Illuminate\Support\Arr;
+
 use Illuminate\Support\Facades\DB;
 use Exception;
 
@@ -206,7 +208,7 @@ class DatafileManager
 
     protected function setRealIndex($relativeChunkIndex, $initChunkIndex, $row)
     {
-        return $relativeChunkIndex + $initChunkIndex + array_get($row, 'shiftrow', 0);
+        return $relativeChunkIndex + $initChunkIndex + Arr::get($row, 'shiftrow', 0);
     }
 
     public function beforeLoad()

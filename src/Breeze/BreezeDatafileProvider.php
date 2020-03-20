@@ -345,7 +345,7 @@ class BreezeDatafileProvider implements DatafileProviderInterface
         $modelDatafileName = $this->modelDatafileName;
         $modelDatafile = new $modelDatafileName;
         $entry = $modelDatafileName::where($modelDatafile->getDatafileIdField(), '=', $this->getDatafileId())->orderBy($modelDatafile->getRowIndexField())->first()->toArray();
-        return array_get($entry, $modelDatafile->getRowIndexField(), 0);
+        return Arr::get($entry, $modelDatafile->getRowIndexField(), 0);
     }
 
     /*
@@ -354,10 +354,10 @@ class BreezeDatafileProvider implements DatafileProviderInterface
     public function fixErrorDatafileRow($row_values = array())
     {
 
-        $datafileIdValue = array_get($row_values, 'datafile_id', -1);
-        $datafileTableIdValue = array_get($row_values, 'datafile_table_id', -1);
-        $index = array_get($row_values, 'row', -1);
-        $fieldName = array_get($row_values, 'field_name', -1);
+        $datafileIdValue = Arr::get($row_values, 'datafile_id', -1);
+        $datafileTableIdValue = Arr::get($row_values, 'datafile_table_id', -1);
+        $index = Arr::get($row_values, 'row', -1);
+        $fieldName = Arr::get($row_values, 'field_name', -1);
 
         $modelName = $this->modelDatafileName;
         $model = $modelName::find($datafileTableIdValue);
@@ -365,7 +365,7 @@ class BreezeDatafileProvider implements DatafileProviderInterface
 
         $this->setDatafileId($datafileIdValue);
 
-        $field = array_get($row_values, $fieldName, null);
+        $field = Arr::get($row_values, $fieldName, null);
         $model->fill([$fieldName => $field]);
 
         $model->setDatafileIdValue($this->getDatafileId());

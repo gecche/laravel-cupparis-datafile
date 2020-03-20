@@ -1,6 +1,8 @@
 <?php namespace Gecche\Cupparis\Datafile;
 
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+
 
 class DatafileHandler {
 
@@ -47,7 +49,7 @@ class DatafileHandler {
 
 	protected function resolveDriver($driverType) {
 
-		$prefixClassName = studly_case($driverType);
+		$prefixClassName = Str::studly($driverType);
 
 		$className = "Gecche\\Cupparis\\Datafile\\Driver\\" . $prefixClassName . 'Driver';
 
