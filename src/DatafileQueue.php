@@ -1,7 +1,7 @@
 <?php namespace Gecche\Cupparis\Datafile;
 
 use Gecche\Cupparis\Datafile\Facades\Datafile;
-use Gecche\Cupparis\Queue\MainQueue;
+use Gecche\Cupparis\Queue\Queues\MainQueue;
 
 use Illuminate\Support\Arr;
 use Exception;

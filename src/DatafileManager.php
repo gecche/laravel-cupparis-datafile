@@ -290,7 +290,7 @@ class DatafileManager
 
 //        Log::info('JOBPROGRESSONFIRE: '.$this->job_id);
         if (isset($this->events)) {
-            $this->events->fire('job.progress', [$this->job_id, $progress]);
+            $this->events->dispatch('job.progress', [$this->job_id, $progress]);
         }
 
     }
