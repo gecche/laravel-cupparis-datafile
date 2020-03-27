@@ -178,7 +178,7 @@ class BreezeDatafile extends Breeze {
 //        $nError = 1;
 //        foreach ($this->errors as $error) {
 //            $value .= $nError . ' ' . $error->field_name . ': '
-//                . ucfirst(Lang::getRaw('validation.' . snake_case($error->error_name)))
+//                . ucfirst(Lang::getRaw('validation.' . Str::snake($error->error_name)))
 //                . $this->csvExportSettings[$type]['separator'];
 //            $nError++;
 //        }

@@ -6,6 +6,7 @@ use Gecche\Breeze\Breeze;
 use Gecche\Cupparis\Datafile\DatafileHandler;
 use Gecche\Cupparis\Datafile\DatafileProviderInterface;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Exception;
@@ -615,7 +616,7 @@ class BreezeDatafileProvider implements DatafileProviderInterface
     {
         if (is_null($filename)) {
 
-            $relativeName = snake_case(substr($this->modelDatafileName,strrpos($this->modelDatafileName,"\\")+1));
+            $relativeName = Str::snake(substr($this->modelDatafileName,strrpos($this->modelDatafileName,"\\")+1));
             $filename = 'template_' . $relativeName;
         }
 
