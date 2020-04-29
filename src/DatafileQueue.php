@@ -114,7 +114,7 @@ class DatafileQueue extends MainQueue {
     }
 
     protected function resolveProviderName($datafileProviderName) {
-        $providerInConfig = Arr::get(Config::get('datafile.providers',[]),$datafileProviderName);
+        $providerInConfig = Arr::get(Config::get('cupparis-datafile.providers',[]),$datafileProviderName);
         return $providerInConfig ?: $datafileProviderName;
     }
 }

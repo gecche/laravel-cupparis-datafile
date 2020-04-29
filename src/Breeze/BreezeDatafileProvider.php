@@ -276,7 +276,7 @@ class BreezeDatafileProvider implements DatafileProviderInterface
             ->where($modelDatafile->getRowIndexField(), '=', $index)->first();
 
         if (!$modelDatafile || !$modelDatafile->getKey()) {
-            throw new Exception('datafile.row-not-found');
+            throw new Exception('cupparis-datafile.row-not-found');
         }
 
         if ($modelDatafile->errors()->count() > 0)

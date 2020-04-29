@@ -12,6 +12,31 @@ class DatafileServiceProvider extends ServiceProvider {
      */
     public function boot()
     {
+
+        $this->publishes([
+            __DIR__.'/config/cupparis-datafile.php' => config_path('cupparis-datafile.php'),
+        ]);
+
+        $this->addValidationExtensions();
+
+    }
+
+	/**
+	 * Register the commands
+	 *
+	 * @return void
+	 */
+	public function register()
+	{
+        $this->app->singleton('datafile', function($app)
+        {
+            return new DatafileManager($app->events);
+        });
+	}
+
+
+	protected function addValidationExtensions() {
+
         /*
          * Stessa identica regola di unique ma per distinguerle
          */
@@ -54,19 +79,6 @@ class DatafileServiceProvider extends ServiceProvider {
             return $exists;
         });
 
-    }
-
-	/**
-	 * Register the commands
-	 *
-	 * @return void
-	 */
-	public function register()
-	{
-        $this->app->singleton('datafile', function($app)
-        {
-            return new DatafileManager($app->events);
-        });
 	}
 
 
