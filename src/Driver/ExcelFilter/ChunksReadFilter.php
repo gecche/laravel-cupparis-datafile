@@ -1,5 +1,9 @@
 <?php namespace Gecche\Cupparis\Datafile\Driver\ExcelFilter;
 
+use PhpOffice\PhpSpreadsheet\Cell\Cell;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Reader\IReadFilter;
+
 /**
  * Created by PhpStorm.
  * User: gecche
@@ -7,7 +11,7 @@
  * Time: 12:11
  */
 
-class ChunksReadFilter implements \PHPExcel_Reader_IReadFilter {
+class ChunksReadFilter implements IReadFilter {
 
     protected $startRow = 1;
     protected $endRow = 0;
@@ -48,7 +52,7 @@ class ChunksReadFilter implements \PHPExcel_Reader_IReadFilter {
      */
     public function readCell($column, $row, $worksheetName = '')
     {
-        $column = \PHPExcel_Cell::columnIndexFromString($column);
+        $column = Coordinate::columnIndexFromString($column);
         $rowOk = $row >= $this->startRow && $row <= $this->endRow && (!$this->finalRow || $row <= $this->finalRow);
         if (!$rowOk) {
             return false;

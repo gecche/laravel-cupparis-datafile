@@ -1,15 +1,17 @@
 <?php namespace Gecche\Cupparis\Datafile\Driver;
 
 
+use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
 use Illuminate\Support\Facades\Log;
 use Gecche\Cupparis\Datafile\Driver\ExcelFilter\ChunksReadFilter;
-use PhpOffice\PhpSpreadsheet\Cell\Cell;
-use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use Illuminate\Support\Str;
 
 
-class ExcelDriver extends DatafileDriver
+
+/*
+ * DA FINIRE PUO' ESSERE UTILE PER GRANDI FILES INCOLONNATI
+ */
+class ExcelSpoutDriver extends DatafileDriver
 {
 
     protected $standardFilePropertiesKeys = [
@@ -49,30 +51,42 @@ class ExcelDriver extends DatafileDriver
             return;
         }
 
-        $inputFileType = IOFactory::identify($this->dataFile);
-        $this->objectReader = IOFactory::createReader($inputFileType);
-
         try {
-            //Carico il foglio indicato nella cofnigurazione
-            //Se non presente carico il foglio 0;
-            $sheetNames = $this->objectReader->listWorksheetNames($this->dataFile);
-            $sheetName = $this->sheetName;
+            $reader = ReaderEntityFactory::createXLSXReader();
+
+            $reader->open($this->dataFile);
+            $this->fileSheetName = null;
+
+            foreach ($reader->getSheetIterator() as $sheet) {
+                // only read data from "summary" sheet
+                if (
+                    (is_int($this->sheetName) && $sheet->getIndex() === $this->sheetName) ||
+                    (!is_int($this->sheetName) && $sheet->getName() === $this->sheetName)
+                ) {
+                        $this->fileSheetName = $sheet->getName();
+                        break; // no need to read more sheets
+                }
+            }
+
+            if (is_null($this->fileSheetName)) {
+                throw new \Exception('NOME DEL FOGLIO INESISTENTE NEL FILE: ' . $this->sheetName);
+            }
+            $reader->close();
+
         } catch (\Exception $e) {
-            $msg = 'Problemi ad aprire il file: non sembra un file salvato correttamente come file excel. Provare ad aprirlo con Excel e salvarlo nuovamente.<br/>';
-            $msg .= $e->getMessage();
+            $reader->close();
+
+            $msg = $e->getMessage();
+
+            if (Str::startsWith($msg, 'NOME DEL FOGLIO INESISTENTE NEL FILE:')) {
+                throw $e;
+            }
+
+            $msg = 'Problemi ad aprire il file: non sembra un file salvato correttamente come file excel. Provare ad aprirlo con Excel e salvarlo nuovamente.<br/>' . $msg;
             throw new \Exception($msg);
         }
 
-        if (is_int($sheetName)) {
-            $this->fileSheetName = $sheetNames[$sheetName];
-        } else {
-            if (!in_array($sheetName, $sheetNames)) {
-                throw new \Exception('Il foglio ' . $sheetName . ' &egrave; inesistente nel file excel caricato.');
-            }
-            $this->fileSheetName = $sheetName;
-        }
-
-        $this->objectReader->setLoadSheetsOnly([$this->fileSheetName]);
+        $this->objectReader = $reader;
 
     }
 
@@ -86,7 +100,27 @@ class ExcelDriver extends DatafileDriver
         $this->nRows = null;
         $this->calculateFilePropertiesArray($fileProperties);
         $this->setObjectReader();
-        $this->calculateHeadersAndBoundaries();
+
+        if (!$this->dataFile) {
+            return;
+        }
+
+        $this->objectReader->open($this->dataFile);
+        foreach ($this->objectReader->getSheetIterator() as $sheet) {
+            // only read data from "summary" sheet
+            if ($sheet->getName() === $this->fileSheetName) {
+                foreach ($sheet->getRowIterator() as $row) {
+                    // do stuff with the row
+                    $cells = $row->getCells();
+                }
+
+            }
+        }
+
+        $this->objectReader->close();
+
+
+        //$this->calculateHeadersAndBoundaries();
     }
 
     protected function calculateHeadersAndBoundaries()
@@ -96,7 +130,7 @@ class ExcelDriver extends DatafileDriver
             return;
         }
 
-        $this->startingcolumnIndex = Coordinate::columnIndexFromString($this->startingColumn);
+        $this->startingcolumnIndex = \PHPExcel_Cell::columnIndexFromString($this->startingColumn);
 
         if ($this->hasHeadersLine) {
             $this->resolveHeaders();
@@ -113,9 +147,9 @@ class ExcelDriver extends DatafileDriver
         }
 
         if (!$this->endingColumn) {
-            $this->endingColumn = Coordinate::stringFromColumnIndex($this->startingcolumnIndex + count($this->headerData) - 1);
+            $this->endingColumn = \PHPExcel_Cell::stringFromColumnIndex($this->startingcolumnIndex + count($this->headerData) - 1);
         }
-        $this->endingColumnIndex = Coordinate::columnIndexFromString($this->endingColumn);
+        $this->endingColumnIndex = \PHPExcel_Cell::columnIndexFromString($this->endingColumn);
 
         if (!$this->endingDataLine) {
             $objPHPExcel = $this->objectReader->load($this->dataFile);
@@ -136,7 +170,7 @@ class ExcelDriver extends DatafileDriver
 
         $endingColumn = $this->endingColumn;
         if (!$endingColumn) {
-            $endingColumn = Coordinate::stringFromColumnIndex($this->startingcolumnIndex + count($this->provider->getHeaders()) - 1);
+            $endingColumn = \PHPExcel_Cell::stringFromColumnIndex($this->startingcolumnIndex + count($this->provider->getHeaders()) - 1);
         }
 
         $objPHPExcel = $this->objectReader->load($this->dataFile);
@@ -236,7 +270,7 @@ class ExcelDriver extends DatafileDriver
         $headers = $this->provider->getHeaders();
 
 
-        $this->phpExcel = new Spreadsheet();
+        $this->phpExcel = new \PHPExcel();
         $this->phpExcel->getProperties()->setCreator(env('EXCEL_AUTHOR', 'Cupparis'));
         $this->phpExcel->getProperties()->setLastModifiedBy(env('EXCEL_AUTHOR', 'Cupparis'));
 
@@ -247,12 +281,12 @@ class ExcelDriver extends DatafileDriver
             $this->phpExcel->setActiveSheetIndex(0);
             $column = 0;
             foreach ($headers as $header) {
-                $coordinate = Coordinate::stringFromColumnIndex($column).'1';
+                $coordinate = \PHPExcel_Cell::stringFromColumnIndex($column).'1';
                 $this->phpExcel->getActiveSheet()->SetCellValue($coordinate,$header);
                 $column++;
             }
 
-            $objWriter = IOFactory::createWriter($this->phpExcel, 'Xlsx');
+            $objWriter = \PHPExcel_IOFactory::createWriter($this->phpExcel, 'Excel2007');
             $filename .= '.xlsx';
             $objWriter->save($filename);
 

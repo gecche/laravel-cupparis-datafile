@@ -15,7 +15,8 @@
         "gecche/laravel-breeze": "v2.x-dev",
         "gecche/laravel-dbhelper": "v2.x-dev",
         "gecche/laravel-cupparis-queue": "v2.x-dev",
-        "box/spout": "3.*"
+        "box/spout": "3.*",
+        "phpoffice/phpspreadsheet": "1.*"
 
     },
     "require-dev": {
