@@ -8,6 +8,7 @@ namespace Gecche\Cupparis\Datafile;
  */
 
 
+use Gecche\Cupparis\Queue\Events\JobProgress;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Facades\Log;
 
@@ -290,7 +291,7 @@ class DatafileManager
 
 //        Log::info('JOBPROGRESSONFIRE: '.$this->job_id);
         if (isset($this->events)) {
-            $this->events->dispatch('job.progress', [$this->job_id, $progress]);
+            $this->events->dispatch(new JobProgress($this->job_id, $progress));
         }
 
     }
