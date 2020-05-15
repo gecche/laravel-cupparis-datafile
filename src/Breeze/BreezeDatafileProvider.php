@@ -3,8 +3,11 @@
 namespace Gecche\Cupparis\Datafile\Breeze;
 
 use Gecche\Breeze\Breeze;
+use Gecche\Breeze\Contracts\BreezeInterface;
+use Gecche\Cupparis\Datafile\Breeze\Contracts\DatafileBreezeInterface;
 use Gecche\Cupparis\Datafile\DatafileHandler;
 use Gecche\Cupparis\Datafile\DatafileProviderInterface;
+use Gecche\Cupparis\Datafile\Facades\Datafile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Config;
@@ -66,11 +69,11 @@ class BreezeDatafileProvider implements DatafileProviderInterface
 
 
         $reflector = new \ReflectionClass($this->modelDatafileName);
-        if (!$reflector->isSubclassOf(BreezeDatafile::class)) {
+        if (!$reflector->implementsInterface(DatafileBreezeInterface::class)) {
             throw new \ReflectionException('Invalid class for model datafile');
         };
         $reflector = new \ReflectionClass($this->modelTargetName);
-        if (!$reflector->isSubclassOf(Breeze::class)) {
+        if (!$reflector->implementsInterface(BreezeInterface::class)) {
             throw new \ReflectionException('Invalid class for model target');
         };
 

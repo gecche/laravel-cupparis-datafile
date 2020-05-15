@@ -7,13 +7,14 @@ use Closure;
 use Gecche\Breeze\Breeze;
 use Gecche\Cupparis\Datafile\Breeze\Concerns\BreezeDatafileTrait;
 use Gecche\Cupparis\Datafile\Breeze\Concerns\HasDatafileValidation;
+use Gecche\Cupparis\Datafile\Breeze\Contracts\DatafileBreezeInterface;
 use Gecche\Cupparis\Datafile\Models\DatafileError;
 use Gecche\DBHelper\Facades\DBHelper;
 use Illuminate\Support\Arr;
 
 use Exception;
 
-class BreezeDatafile extends Breeze {
+class BreezeDatafile extends Breeze implements DatafileBreezeInterface {
 
     use HasDatafileValidation;
     use BreezeDatafileTrait;
