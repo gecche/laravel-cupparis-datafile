@@ -4,6 +4,7 @@ namespace Gecche\Cupparis\Datafile\Breeze;
 
 use Gecche\Breeze\Breeze;
 use Gecche\Breeze\Contracts\BreezeInterface;
+use Gecche\Cupparis\Datafile\Breeze\Contracts\BreezeDatafileInterface;
 use Gecche\Cupparis\Datafile\Breeze\Contracts\DatafileBreezeInterface;
 use Gecche\Cupparis\Datafile\DatafileHandler;
 use Gecche\Cupparis\Datafile\DatafileProviderInterface;
@@ -305,7 +306,7 @@ class BreezeDatafileProvider implements DatafileProviderInterface
         return true;
     }
 
-    public function associateRow(BreezeDatafile $modelDatafile)
+    public function associateRow(BreezeDatafileInterface $modelDatafile)
     {
         return new $this->modelTargetName;
     }
@@ -315,7 +316,7 @@ class BreezeDatafileProvider implements DatafileProviderInterface
         return $row;
     }
 
-    public function formatRow(BreezeDatafile $modelDatafile)
+    public function formatRow(BreezeDatafileInterface $modelDatafile)
     {
         $values = $modelDatafile->toArray();
         foreach ($this->excludeFromFormat as $field) {
