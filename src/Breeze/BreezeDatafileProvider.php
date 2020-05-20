@@ -62,6 +62,8 @@ class BreezeDatafileProvider implements DatafileProviderInterface
     public $formPost = [];
     protected $excludeFromFormat = ['id', 'row', 'datafile_id'];
 
+    protected $stringRowIndexInDb = false;
+
 
     public function __construct()
     {
@@ -280,7 +282,8 @@ class BreezeDatafileProvider implements DatafileProviderInterface
             ->where($modelDatafile->getRowIndexField(), '=', $index)->first();
 
         if (!$modelDatafile || !$modelDatafile->getKey()) {
-            throw new Exception('cupparis-datafile.row-not-found');
+            throw new Exception('cupparis-datafile.row-not-found' . " - Row: "
+                . $index . " - Datafile Id: " . $this->getDatafileId());
         }
 
         if ($modelDatafile->errors()->count() > 0)
@@ -349,7 +352,13 @@ class BreezeDatafileProvider implements DatafileProviderInterface
     {
         $modelDatafileName = $this->modelDatafileName;
         $modelDatafile = new $modelDatafileName;
-        $entry = $modelDatafileName::where($modelDatafile->getDatafileIdField(), '=', $this->getDatafileId())->orderBy($modelDatafile->getRowIndexField())->first()->toArray();
+        $entry = $modelDatafileName::where($modelDatafile->getDatafileIdField(), '=', $this->getDatafileId());
+        if ($this->stringRowIndexInDb) {
+            $entry = $entry->orderByRaw('ABS('.$modelDatafile->getRowIndexField().')')->first();
+        } else {
+            $entry = $entry->orderBy($modelDatafile->getRowIndexField())->first();
+        }
+        $entry = $entry->toArray();
         return Arr::get($entry, $modelDatafile->getRowIndexField(), 0);
     }
 

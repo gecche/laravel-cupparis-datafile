@@ -10,6 +10,7 @@ namespace Gecche\Cupparis\Datafile;
 
 use Gecche\Cupparis\Queue\Events\JobProgress;
 use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 
 use Illuminate\Support\Arr;
@@ -250,7 +251,7 @@ class DatafileManager
 
 
         $totalRows = $this->datafileProvider->countRows();
-        $block = 50;
+        $block = 250;
         $index = 0;
         $firstRow = $this->datafileProvider->getFirstRow();
 
@@ -263,6 +264,7 @@ class DatafileManager
         //TODO: transazione
         try {
             while ($index < $totalRows) {
+//                echo $index . "\n";
                 $this->datafileProvider->saveRow($firstRow + $index);
                 if ($index % $block == 0) {
                     $this->fireProgress($firstRow + $index, $totalRows);
