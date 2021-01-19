@@ -11,10 +11,10 @@
     ],
     "require": {
         "laravel/framework": "^6.0",
-        "gecche/laravel-cupparis-helpers": "v2.x-dev",
-        "gecche/laravel-breeze": "v2.x-dev",
-        "gecche/laravel-dbhelper": "v2.x-dev",
-        "gecche/laravel-cupparis-queue": "v2.x-dev",
+        "gecche/laravel-cupparis-helpers": "2.0.*",
+        "gecche/laravel-breeze": "2.0.*",
+        "gecche/laravel-dbhelper": "2.0.*",
+        "gecche/laravel-cupparis-queue": "2.0.*",
         "box/spout": "3.*",
         "phpoffice/phpspreadsheet": "1.*"
 
