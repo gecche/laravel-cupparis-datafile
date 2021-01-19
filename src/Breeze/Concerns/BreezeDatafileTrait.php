@@ -178,6 +178,13 @@ trait BreezeDatafileTrait {
 
     }
 
+    public static function getDatafileModelName() {
+        $relationData = static::getRelationsData();
+
+        return Arr::get(Arr::get($relationData,'datafile',[]), 'related');
+
+    }
+
 
 }
 

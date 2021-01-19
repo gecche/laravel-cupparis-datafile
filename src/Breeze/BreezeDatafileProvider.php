@@ -34,6 +34,19 @@ class BreezeDatafileProvider implements DatafileProviderInterface
      */
     protected $modelTargetName = null;
 
+    /**
+     * @var null|string
+     * Classe del modello breeze dove verrano salvati eventuali errori delle righe
+     */
+    protected $datafileModelErrorName = null;
+    /**
+     * @var null|string
+     * Classe del modello breeze che memorizza le importazioni (i datafile)
+     */
+    protected $datafileModelName = null;
+
+    protected $datafile = null;
+
     protected $config = null;
 
     public $datafile_id = null;
@@ -81,6 +94,7 @@ class BreezeDatafileProvider implements DatafileProviderInterface
         };
 
         $this->datafileModelErrorName = ($this->modelDatafileName)::getErrorsModelName();
+        $this->datafileModelName = ($this->modelDatafileName)::getDatafileModelName();
 
         if (!$this->headers) {
             $this->createHeaders();
@@ -505,6 +519,25 @@ class BreezeDatafileProvider implements DatafileProviderInterface
 
     public function beforeLoad()
     {
+        $datafileData = $this->setDatafileData();
+        $this->associateDatafile($datafileData);
+
+    }
+
+    protected function associateDatafile($data) {
+
+        $this->datafile = ($this->datafileModelName)::create($data);
+
+    }
+
+    protected function setDatafileData() {
+
+        $data = [
+            'datafile_id' => $this->getDatafileId(),
+            'datafile_type' => trim($this->modelDatafileName, "\\"),
+        ];
+
+        return $data;
 
     }
 

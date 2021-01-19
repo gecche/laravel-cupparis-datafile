@@ -88,5 +88,6 @@ interface BreezeDatafileInterface extends BreezeInterface {
 
     public static function getErrorsModelName();
 
+    public static function getDatafileModelName();
 
 }
