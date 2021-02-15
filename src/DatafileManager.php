@@ -265,7 +265,7 @@ class DatafileManager
         try {
             while ($index < $totalRows) {
 //                echo $index . "\n";
-                $this->datafileProvider->saveRow($firstRow + $index);
+                $this->datafileProvider->saveRow($this->getCurrentSheet(), $firstRow + $index);
                 if ($index % $block == 0) {
                     $this->fireProgress($firstRow + $index, $totalRows);
                     echo "row " . ($firstRow + $index) . "\n";

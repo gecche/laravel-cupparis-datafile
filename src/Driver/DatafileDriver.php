@@ -167,6 +167,17 @@ abstract class DatafileDriver {
         $this->fileProperties[$name] = $value;
     }
 
+    public function getSheetsNames() {
+        return [];
+    }
+
+    public function setCurrentSheet($sheetName) {
+        return true;
+    }
+
+    public function getCurrentSheet() {
+        return null;
+    }
 
 }
 ?>

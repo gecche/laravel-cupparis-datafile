@@ -682,15 +682,15 @@ class BreezeDatafileProvider implements DatafileProviderInterface
     }
 
     public function getSheetsNames() {
-        return [];
+        return $this->handler->getSheetsNames();
     }
 
     public function setCurrentSheet($sheetName) {
-        return true;
+        return $this->handler->setCurrentSheet($sheetName);
     }
 
     public function getCurrentSheet() {
-        return null;
+        return $this->handler->getCurrentSheet();
     }
 }
 

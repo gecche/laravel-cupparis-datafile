@@ -113,7 +113,7 @@ trait ExcelDriverTrait
         $filterChunk = new ChunksReadFilter($startingChunkLine, $this->endingDataLine, $this->startingColumnIndex,
             $this->endingColumnIndex, $toLine);
         $this->objectReader->setReadFilter($filterChunk);
-        $this->objectReader->setLoadSheetsOnly($this->fileSheetName);
+        $this->objectReader->setLoadSheetsOnly($this->currentSheet);
 
         $objPHPExcel = $this->objectReader->load($this->dataFile);
 
@@ -214,14 +214,19 @@ trait ExcelDriverTrait
         if (!$this->objectReader) {
             return true;
         }
+
         $spreadSheet = $this->objectReader->load($this->dataFile);
-        if (is_numeric($sheetName)) {
+        if (is_int($sheetName)) {
             $spreadSheet->setActiveSheetIndex($sheetName);
+            $currentSheetInfo = Arr::get($this->sheets,$sheetName,[]);
+            $this->currentSheet = Arr::get($currentSheetInfo,'worksheetName',$sheetName);
         } else {
             $spreadSheet->setActiveSheetIndexByName($sheetName);
+            $this->currentSheet = $sheetName;
         }
 
-        $this->currentSheet = $sheetName;
+        Log::info("CURRENT SHEET::".$sheetName.' --- ' . $this->currentSheet);
+
         return true;
     }
 
