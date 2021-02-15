@@ -16,7 +16,7 @@ interface DatafileProviderInterface
 
     public function getFileProperties();
 
-    public function saveDatafileRow($row, $index, $id = null);
+    public function saveDatafileRow($row, $sheet, $index, $id = null);
 
     public function beforeLoad();
 
@@ -26,10 +26,15 @@ interface DatafileProviderInterface
 
     public function afterLoadPart();
 
-    public function saveRow($index);
+    public function saveRow($sheet, $index);
 
     public function countRows();
 
     public function getFiletype();
 
+    public function getSheetsNames();
+
+    public function setCurrentSheet($sheetName);
+
+    public function getCurrentSheet();
 }

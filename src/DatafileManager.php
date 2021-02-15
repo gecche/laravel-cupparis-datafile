@@ -22,21 +22,21 @@ class DatafileManager
 {
     /*
      * array del tipo di datafile, ha la seguente forma:
-     * array( 'headers' => array( 'header1' => array( 'datatype' => 'string|int|data...', (default string) 
-     *          'checks' => array( 'checkCallback1' => array(params => paramsArray,type => error|alert), ... 
-     *          'checkCallbackN' => array(params => paramsArray,type => error|alert), ), (deafult array()) 
-     *          'transforms' => array( 'transformCallback1' => array(params), ... 'transformCallbackN' => array(params), ), 
-     *          (default array()) 'blocking' => true|false (default false) ) ... 
-     * 'headerN' => array( 'datatype' => 'string|int|data...', (default string) 'checks' => 
-     * array( 'checkCallback1' => array(params), ... 'checkCallbackN' => array(params), ), 
-     * (deafult array()) 'transforms' => array( 'transformCallback1' => array(params), ... 
-     * 'transformCallbackN' => array(params), ), (default array()) ) 
+     * array( 'headers' => array( 'header1' => array( 'datatype' => 'string|int|data...', (default string)
+     *          'checks' => array( 'checkCallback1' => array(params => paramsArray,type => error|alert), ...
+     *          'checkCallbackN' => array(params => paramsArray,type => error|alert), ), (deafult array())
+     *          'transforms' => array( 'transformCallback1' => array(params), ... 'transformCallbackN' => array(params), ),
+     *          (default array()) 'blocking' => true|false (default false) ) ...
+     * 'headerN' => array( 'datatype' => 'string|int|data...', (default string) 'checks' =>
+     * array( 'checkCallback1' => array(params), ... 'checkCallbackN' => array(params), ),
+     * (deafult array()) 'transforms' => array( 'transformCallback1' => array(params), ...
+     * 'transformCallbackN' => array(params), ), (default array()) )
      * 'peremesso' => 'permesso_string' (default 'datafile_upload') 'blocking' => true|false (default false) ) )
-     * I chechCallbacks e transformCallbacks sono dei nomi di funzioni di questo modello (o sottoclassi) dichiarati come protected e 
-     * con il nome del callback preceduto da _check_ o _transform_ e che accettano i parametri specificati 
-     * I checkCallbacks hanno anche un campo che specifica se si tratta di errore o di alert I checks servono per verificare se i dati del 
-     * campo corrispondono ai requisiti richiesti I transforms trasformano i dati in qualcos'altro (es: formato della data da gg/mm/yyyy a yyyy-mm-gg) 
-     * Vengono eseguiti prima tutti i checks e poi tutti i transforms (nell'ordine specificato dall'array) 
+     * I chechCallbacks e transformCallbacks sono dei nomi di funzioni di questo modello (o sottoclassi) dichiarati come protected e
+     * con il nome del callback preceduto da _check_ o _transform_ e che accettano i parametri specificati
+     * I checkCallbacks hanno anche un campo che specifica se si tratta di errore o di alert I checks servono per verificare se i dati del
+     * campo corrispondono ai requisiti richiesti I transforms trasformano i dati in qualcos'altro (es: formato della data da gg/mm/yyyy a yyyy-mm-gg)
+     * Vengono eseguiti prima tutti i checks e poi tutti i transforms (nell'ordine specificato dall'array)
      * Blocking invece definisce se un errore nei check di una riga corrisponde al blocco dell'upload datafile o se si puo' andare avanti
      * saltando quella riga permesso e se il
      */
@@ -308,6 +308,22 @@ class DatafileManager
         return $this->_formPost;
     }
 
+
+    /*
+     * FUNZIONI CHE HANNO SENSO PER I PROVIDER DI TIPO EXCEL
+     */
+
+    public function getSheetsNames() {
+        return $this->datafileProvider->getSheetsNames();
+    }
+
+    public function setCurrentSheet($sheetName) {
+        return $this->datafileProvider->setCurrentSheet($sheetName);
+    }
+
+    public function getCurrentSheet() {
+        return $this->datafileProvider->getCurrentSheet();
+    }
 
 }
 

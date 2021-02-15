@@ -73,7 +73,7 @@ class BreezeDatafileProvider implements DatafileProviderInterface
     protected $outputEncoding = 'UTF-8';
 
     public $formPost = [];
-    protected $excludeFromFormat = ['id', 'row', 'datafile_id'];
+    protected $excludeFromFormat = ['id', 'row', 'datafile_id', 'datafile_sheet'];
 
     protected $stringRowIndexInDb = false;
 
@@ -248,7 +248,7 @@ class BreezeDatafileProvider implements DatafileProviderInterface
         return $empty;
     }
 
-    public function saveDatafileRow($row, $index, $id = null)
+    public function saveDatafileRow($row, $sheet, $index, $id = null)
     {
 
         if ($index == 0 && $this->skipFirstLine) {
@@ -270,17 +270,18 @@ class BreezeDatafileProvider implements DatafileProviderInterface
 //        Log::info("Index: " . $index);
         $model->fill($row);
         $model->setDatafileIdValue($this->getDatafileId());
+        $model->setDatafileSheetValue($sheet);
         $model->setRowIndexValue($index);
 
         $validator = $model->getDatafileValidator();
         $model->save();
         //echo "$modelDatafileName validatore = $validator\n";
 //        Log::info("DATAFILE ERRORS: ".$index);
-        $this->setDatafileErrors($index, $model, $validator);
+        $this->setDatafileErrors($sheet, $index, $model, $validator);
 
     }
 
-    public function saveRow($index)
+    public function saveRow($sheet, $index)
     {
 
         $modelDatafileName = $this->modelDatafileName;
@@ -293,11 +294,12 @@ class BreezeDatafileProvider implements DatafileProviderInterface
 //        echo $index . "\n";
 
         $modelDatafile = $modelDatafileName::where($modelDatafile->getDatafileIdField(), '=', $this->getDatafileId())
+            ->where($modelDatafile->getDatafileSheetField(), $sheet)
             ->where($modelDatafile->getRowIndexField(), '=', $index)->first();
 
         if (!$modelDatafile || !$modelDatafile->getKey()) {
             throw new Exception('cupparis-datafile.row-not-found' . " - Row: "
-                . $index . " - Datafile Id: " . $this->getDatafileId());
+                . $index . " - Sheet: " . $this->getCurrentSheet() . " - Datafile Id: " . $this->getDatafileId());
         }
 
         if ($modelDatafile->errors()->count() > 0)
@@ -366,7 +368,8 @@ class BreezeDatafileProvider implements DatafileProviderInterface
     {
         $modelDatafileName = $this->modelDatafileName;
         $modelDatafile = new $modelDatafileName;
-        $entry = $modelDatafileName::where($modelDatafile->getDatafileIdField(), '=', $this->getDatafileId());
+        $entry = $modelDatafileName::where($modelDatafile->getDatafileIdField(), '=', $this->getDatafileId())
+                    ->where($modelDatafile->getDatafileSheetField(),$this->getCurrentSheet());
         if ($this->stringRowIndexInDb) {
             $entry = $entry->orderByRaw('ABS('.$modelDatafile->getRowIndexField().')')->first();
         } else {
@@ -397,6 +400,7 @@ class BreezeDatafileProvider implements DatafileProviderInterface
         $model->fill([$fieldName => $field]);
 
         $model->setDatafileIdValue($this->getDatafileId());
+        $model->setDatafileSheetValue($this->getCurrentSheet());
         $model->setRowIndexValue($index);
 
         $model->save();
@@ -414,11 +418,12 @@ class BreezeDatafileProvider implements DatafileProviderInterface
 
         $model = new $this->modelDatafileName;
         $datafileIdValue = $row_values[$model->getDatafileIdField()];
+        $sheet = $row_values[$model->getDatafileSheetField()];
         $index = $row_values[$model->getRowIndexField()];
 
         $this->setDatafileId($datafileIdValue);
 
-        $this->saveDatafileRow($row_values, $index, $row_values['id']);
+        $this->saveDatafileRow($row_values, $sheet, $index, $row_values['id']);
 
         $this->finalizeDatafileErrors();
 
@@ -460,7 +465,7 @@ class BreezeDatafileProvider implements DatafileProviderInterface
         $this->finalizeDatafileErrors();
     }
 
-    public function setDatafileErrors($index, $model, Validator $validator)
+    public function setDatafileErrors($sheet, $index, $model, Validator $validator)
     {
         $datafileErrorName = $this->datafileModelErrorName;
         //CANCELLA errori gia' presenti assocaiti a quella riga
@@ -488,6 +493,7 @@ class BreezeDatafileProvider implements DatafileProviderInterface
                         'param' => NULL, //questo sempre null, eventualmnete va aggiornato alla fine del primo caricamento delle righe
                         'value' => $data[$field_name],
                         'row' => $index,
+                        'datafile_sheet' => $sheet,
                     ));
                     $model->errors()->save($datafileError);
                 }
@@ -535,6 +541,7 @@ class BreezeDatafileProvider implements DatafileProviderInterface
         $data = [
             'datafile_id' => $this->getDatafileId(),
             'datafile_type' => trim($this->modelDatafileName, "\\"),
+            'datafile_sheet' => $this->getCurrentSheet(),
         ];
 
         return $data;
@@ -614,6 +621,7 @@ class BreezeDatafileProvider implements DatafileProviderInterface
                         //questo sempre null, eventualmnete va aggiornato alla fine del primo caricamento delle righe
                         'value' => $columnValue,
                         'row' => $row,
+                        'datafile_sheet' => $this->getCurrentSheet(),
                     ));
                 }
             }
@@ -671,6 +679,17 @@ class BreezeDatafileProvider implements DatafileProviderInterface
         return $this->handler->writeHeaders($fullFilename);
     }
 
+    public function getSheetsNames() {
+        return [];
+    }
+
+    public function setCurrentSheet($sheetName) {
+        return true;
+    }
+
+    public function getCurrentSheet() {
+        return null;
+    }
 }
 
 // End Datafile Core Model

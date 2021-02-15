@@ -9,7 +9,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 
-class ExcelDriver extends DatafileDriver
+class ExcelMultiCopySheetDriver extends DatafileDriver
 {
 
     use ExcelDriverTrait;
@@ -53,28 +53,6 @@ class ExcelDriver extends DatafileDriver
 
         $inputFileType = IOFactory::identify($this->dataFile);
         $this->objectReader = IOFactory::createReader($inputFileType);
-
-        try {
-            //Carico il foglio indicato nella cofnigurazione
-            //Se non presente carico il foglio 0;
-            $sheetNames = $this->objectReader->listWorksheetNames($this->dataFile);
-            $sheetName = $this->sheetName;
-        } catch (\Exception $e) {
-            $msg = 'Problemi ad aprire il file: non sembra un file salvato correttamente come file excel. Provare ad aprirlo con Excel e salvarlo nuovamente.<br/>';
-            $msg .= $e->getMessage();
-            throw new \Exception($msg);
-        }
-
-        if (is_int($sheetName)) {
-            $this->fileSheetName = $sheetNames[$sheetName];
-        } else {
-            if (!in_array($sheetName, $sheetNames)) {
-                throw new \Exception('Il foglio ' . $sheetName . ' &egrave; inesistente nel file excel caricato.');
-            }
-            $this->fileSheetName = $sheetName;
-        }
-
-        $this->objectReader->setLoadSheetsOnly([$this->fileSheetName]);
 
     }
 

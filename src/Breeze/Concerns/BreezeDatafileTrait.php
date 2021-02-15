@@ -59,6 +59,22 @@ trait BreezeDatafileTrait {
     /**
      * @return string
      */
+    public function getDatafileSheetField(): string
+    {
+        return $this->datafile_sheet_field;
+    }
+
+    /**
+     * @param string $datafile_sheet_field
+     */
+    public function setDatafileSheetField(string $datafile_sheet_field): void
+    {
+        $this->datafile_sheet_field = $datafile_sheet_field;
+    }
+
+    /**
+     * @return string
+     */
     public function getDatafileIdValue()
     {
         return $this->{$this->datafile_id_field};
@@ -88,6 +104,21 @@ trait BreezeDatafileTrait {
         $this->{$this->row_index_field} = $rowIndexValue;
     }
 
+    /**
+     * @return string
+     */
+    public function getDatafileSheetValue()
+    {
+        return $this->{$this->datafile_sheet_field};
+    }
+
+    /**
+     * @return string
+     */
+    public function setDatafileSheetValue($datafileSheetValue)
+    {
+        $this->{$this->datafile_sheet_field} = $datafileSheetValue;
+    }
 
     /*
      * CALCOLO DEGLI HEADERS DI DEFAULT CON DB HELPERS

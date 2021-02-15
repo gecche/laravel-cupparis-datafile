@@ -24,6 +24,7 @@ class BreezeDatafile extends Breeze implements DatafileBreezeInterface {
 	// campi predefiniti, necessari per il funzionamento del modello
 	public $datafile_id_field = 'datafile_id';
     public $row_index_field = 'row';
+    public $datafile_sheet_field = 'datafile_sheet';
 
     protected $guarded = [];
 
