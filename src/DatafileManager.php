@@ -201,7 +201,7 @@ class DatafileManager
                 }
             }
 
-            $this->datafileProvider->saveDatafileRow($row, $realIndex);
+            $this->datafileProvider->saveDatafileRow($row, $this->getCurrentSheet(), $realIndex);
 
         }
 

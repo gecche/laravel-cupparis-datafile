@@ -10,6 +10,7 @@ use Gecche\Cupparis\Datafile\DatafileHandler;
 use Gecche\Cupparis\Datafile\DatafileProviderInterface;
 use Gecche\Cupparis\Datafile\Facades\Datafile;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
@@ -270,6 +271,7 @@ class BreezeDatafileProvider implements DatafileProviderInterface
 //        Log::info("Index: " . $index);
         $model->fill($row);
         $model->setDatafileIdValue($this->getDatafileId());
+        Log::info("Sheet:: ".$sheet);
         $model->setDatafileSheetValue($sheet);
         $model->setRowIndexValue($index);
 
