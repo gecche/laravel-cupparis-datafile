@@ -7,6 +7,8 @@
  */
 namespace Gecche\Cupparis\Datafile;
 
+use Gecche\Cupparis\Datafile\Breeze\BreezeDatafileProvider;
+
 interface DatafileProviderInterface
 {
     /**
@@ -17,6 +19,8 @@ interface DatafileProviderInterface
     public function getFileProperties();
 
     public function saveDatafileRow($row, $sheet, $index, $id = null);
+
+    public function getDatafile();
 
     public function beforeLoad();
 
@@ -32,9 +36,21 @@ interface DatafileProviderInterface
 
     public function getFiletype();
 
+
     public function getSheetsNames();
 
-    public function setCurrentSheet($sheetName);
+    public function setCurrentSheet($sheetName,$fileProperties = null);
 
     public function getCurrentSheet();
+
+    /**
+     * @return mixed
+     */
+    public function getSheetsToUse();
+
+    /**
+     * @param mixed $sheetsToUse
+     */
+    public function setSheetsToUse($sheetsToUse): void;
+
 }

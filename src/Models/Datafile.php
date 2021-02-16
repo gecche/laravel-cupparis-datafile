@@ -15,4 +15,8 @@ class Datafile extends Breeze {
     public $timestamps = true;
     public $ownerships = true;
 
+    public $casts = [
+        'datafile_sheet' => 'array',
+    ];
+
 }

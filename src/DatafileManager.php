@@ -115,6 +115,9 @@ class DatafileManager
         $this->datafileProvider->setFilename($this->filename);
     }
 
+    public function getDatafile() {
+        return $this->datafileProvider->getDatafile();
+    }
 
     /**
      * @return boolean
@@ -265,7 +268,7 @@ class DatafileManager
         try {
             while ($index < $totalRows) {
 //                echo $index . "\n";
-                $this->datafileProvider->saveRow($this->getCurrentSheet(), $firstRow + $index);
+                $this->datafileProvider->saveRow($this->getCurrentSheet(true), $firstRow + $index);
                 if ($index % $block == 0) {
                     $this->fireProgress($firstRow + $index, $totalRows);
                     echo "row " . ($firstRow + $index) . "\n";
@@ -313,16 +316,16 @@ class DatafileManager
      * FUNZIONI CHE HANNO SENSO PER I PROVIDER DI TIPO EXCEL
      */
 
-    public function getSheetsNames() {
-        return $this->datafileProvider->getSheetsNames();
+    public function getSheetsNames($loaded = false) {
+        return $this->datafileProvider->getSheetsNames($loaded);
     }
 
-    public function setCurrentSheet($sheetName) {
-        return $this->datafileProvider->setCurrentSheet($sheetName);
+    public function setCurrentSheet($sheetName,$fileProperties = null,$loaded = false) {
+        return $this->datafileProvider->setCurrentSheet($sheetName,$fileProperties,$loaded);
     }
 
-    public function getCurrentSheet() {
-        return $this->datafileProvider->getCurrentSheet();
+    public function getCurrentSheet($loaded = false) {
+        return $this->datafileProvider->getCurrentSheet($loaded);
     }
 
 }

@@ -11,6 +11,13 @@ abstract class DatafileDriver {
 	protected $chunkLinesNumber;
 	protected $nRows;
 
+    protected $sheets = null;
+    protected $sheetsToUse = null;
+
+    protected $currentSheet;
+
+
+
     protected $standardFilePropertiesKeys = [
     	'checkHeadersCaseSensitive' => true,
     	'hasHeadersLine' => true,
@@ -36,24 +43,12 @@ abstract class DatafileDriver {
         return $this->fileProperties;
     }
 
-    /**
-     * @param array $fileProperties
-     */
-    public function setFileProperties($fileProperties)
-    {
-        $this->manageFileProperties($fileProperties);
-    }
-
 	public function __construct(BreezeDatafileProvider $provider) {		//Constructor
 		$this->provider = $provider;
-        $this->setDataFile($this->provider->getFilename());
 	}
 
-    protected function calculateFilePropertiesArray($fileProperties = null) {
-        if (is_null($fileProperties)) {
-            $fileProperties = $this->provider->getFileProperties();
-        }
 
+    protected function calculateFilePropertiesArray($fileProperties) {
         $filePropertiesKeys = array_merge($this->standardFilePropertiesKeys,$this->filePropertiesKeys);
         foreach ($filePropertiesKeys as $filePropertyKey => $filePropertyValue) {
             if (!array_key_exists($filePropertyKey,$fileProperties)) {
@@ -63,7 +58,11 @@ abstract class DatafileDriver {
         $this->fileProperties = $fileProperties;
     }
 
-	protected function manageFileProperties($fileProperties = null) {
+	public function manageFileProperties($fileProperties = null) {
+
+        if (is_null($fileProperties)) {
+            $fileProperties = $this->provider->getFileProperties();
+        }
 
         $this->nRows = null;
 
@@ -72,7 +71,12 @@ abstract class DatafileDriver {
     	$this->calculateHeadersAndBoundaries();
 	}
 
-	protected function calculateHeadersAndBoundaries() {
+
+    protected function setSheetsToUse() {
+        $this->sheetsToUse = $this->provider->getSheetsToUse();
+    }
+
+    protected function calculateHeadersAndBoundaries() {
 
     	//In pratica se c'è la riga di headers nel file la calcolo con il resolveHeaders
 		//altrimenti la prendo dal provider... una riga di headers in qualche modo ci deve essere
@@ -113,8 +117,8 @@ abstract class DatafileDriver {
 	public function setDataFile($dataFile)
 	{
 		$this->dataFile = $dataFile;
-		$this->manageFileProperties();
-	}
+        $this->setSheetsToUse();
+    }
 
 
 
@@ -168,15 +172,16 @@ abstract class DatafileDriver {
     }
 
     public function getSheetsNames() {
-        return [];
+        return [-1];
     }
 
-    public function setCurrentSheet($sheetName) {
-        return true;
+    public function setCurrentSheet($sheetName = null,$fileProperties = null) {
+        $this->currentSheet = $sheetName;
+        $this->manageFileProperties($fileProperties);
     }
 
     public function getCurrentSheet() {
-        return null;
+        return $this->currentSheet;
     }
 
 }

@@ -58,6 +58,8 @@ class BreezeDatafileProvider implements DatafileProviderInterface
     protected $fileProperties = [];
     protected $filetype = 'csv'; //csv, fixed_text, excel
 
+    protected $sheetsToUse;
+
     protected $chunkRows = 100;
 
     protected $skipFirstLine = false;
@@ -77,6 +79,8 @@ class BreezeDatafileProvider implements DatafileProviderInterface
     protected $excludeFromFormat = ['id', 'row', 'datafile_id', 'datafile_sheet'];
 
     protected $stringRowIndexInDb = false;
+
+    protected $currentSheet;
 
 
     public function __construct()
@@ -145,6 +149,23 @@ class BreezeDatafileProvider implements DatafileProviderInterface
     {
         $this->fileProperties = $fileProperties;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getSheetsToUse()
+    {
+        return $this->sheetsToUse;
+    }
+
+    /**
+     * @param mixed $sheetsToUse
+     */
+    public function setSheetsToUse($sheetsToUse): void
+    {
+        $this->sheetsToUse = $sheetsToUse;
+    }
+
 
     /**
      * @param null $filename
@@ -358,7 +379,9 @@ class BreezeDatafileProvider implements DatafileProviderInterface
     {
         $modelDatafileName = $this->modelDatafileName;
         $modelDatafile = new $modelDatafileName;
-        return $modelDatafileName::where($modelDatafile->getDatafileIdField(), '=', $this->getDatafileId())->count();
+        return $modelDatafileName::where($modelDatafile->getDatafileIdField(), '=', $this->getDatafileId())
+                ->where($modelDatafile->getDatafileSheetField(),$this->getCurrentSheet())
+                ->count();
 
     }
 
@@ -525,17 +548,33 @@ class BreezeDatafileProvider implements DatafileProviderInterface
 
     }
 
-    public function beforeLoad()
-    {
-        $datafileData = $this->setDatafileData();
-        $this->associateDatafile($datafileData);
-
+    public function getDatafile() {
+        if (is_null($this->datafile)) {
+            $this->setDatafile();
+        }
+        return $this->datafile;
     }
 
-    protected function associateDatafile($data) {
+    protected function setDatafile() {
+        $this->associateDatafile();
+        if (!$this->datafile->getKey()) {
+            $this->setDatafileData();
+        }
+    }
 
-        $this->datafile = ($this->datafileModelName)::create($data);
+    public function beforeLoad()
+    {
+        return true;
+    }
 
+    protected function associateDatafile() {
+
+        $datafile = ($this->datafileModelName)::where('datafile_id',$this->datafile_id)->first();
+        if (!$datafile) {
+            $datafile = new $this->datafileModelName;
+        }
+
+        $this->datafile = $datafile;
     }
 
     protected function setDatafileData() {
@@ -543,10 +582,11 @@ class BreezeDatafileProvider implements DatafileProviderInterface
         $data = [
             'datafile_id' => $this->getDatafileId(),
             'datafile_type' => trim($this->modelDatafileName, "\\"),
-            'datafile_sheet' => $this->getCurrentSheet(),
+            'datafile_sheet' => $this->getSheetsNames(),
         ];
 
-        return $data;
+        $this->datafile->fill($data);
+        $this->datafile->save();
 
     }
 
@@ -681,17 +721,24 @@ class BreezeDatafileProvider implements DatafileProviderInterface
         return $this->handler->writeHeaders($fullFilename);
     }
 
-    public function getSheetsNames() {
+    public function getSheetsNames($loaded = false) {
+        if ($loaded) {
+            return $this->getDatafile()->datafile_sheet;
+        }
         return $this->handler->getSheetsNames();
     }
 
-    public function setCurrentSheet($sheetName) {
-        return $this->handler->setCurrentSheet($sheetName);
+    public function setCurrentSheet($sheetName,$fileProperties = null,$loaded = false) {
+        $this->currentSheet = $sheetName;
+        if (!$loaded) {
+            $this->handler->setCurrentSheet($sheetName,$fileProperties);
+        }
     }
 
-    public function getCurrentSheet() {
-        return $this->handler->getCurrentSheet();
+    public function getCurrentSheet($loaded = false) {
+        return $this->currentSheet;
     }
+
 }
 
 // End Datafile Core Model
