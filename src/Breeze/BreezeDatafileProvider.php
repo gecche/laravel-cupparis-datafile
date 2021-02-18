@@ -400,7 +400,7 @@ class BreezeDatafileProvider implements DatafileProviderInterface
         } else {
             $entry = $entry->orderBy($modelDatafile->getRowIndexField())->first();
         }
-        $entry = $entry->toArray();
+        $entry = $entry?$entry->toArray():[];
         return Arr::get($entry, $modelDatafile->getRowIndexField(), 0);
     }
 
