@@ -278,6 +278,7 @@ class DatafileManager
         } catch (Exception $e) {
             //TODO: rollback
             echo $e->getMessage();
+            echo $e->getTraceAsString();
             DB::rollback();
             throw $e;
         }
