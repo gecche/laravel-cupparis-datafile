@@ -23,6 +23,8 @@ class ExcelDriver extends DatafileDriver
         'endingColumn' => null,
         'skipEmptyLines' => false,  // Se la procedura salta le righe vuote che trova
         'stopAtEmptyLine' => false, // Se la procedura di importazione si ferma alla prima riga vuota incontrata
+        'calculateFormulas' => false, //nella range to array calola le formule
+        'formatValues' => false, //nella range to array formatta i valori (date ecc...)
     ];
 
     protected $sheetsNames;
@@ -124,7 +126,7 @@ class ExcelDriver extends DatafileDriver
 
         $range = $this->startingColumn . $this->headersLineNumber . ':' . $endingColumn . $this->headersLineNumber;
 
-        $rangeArray = $this->worksheet->rangeToArray($range, '', false, false);
+        $rangeArray = $this->worksheet->rangeToArray($range, '', $this->calculateFormulas, $this->formatValues);
 
 
         $this->headerData = array_map('trim', current($rangeArray));
