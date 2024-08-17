@@ -9,6 +9,7 @@ class CsvDriver extends DatafileDriver
     protected $filePropertiesKeys = [
         'separator' => ';',
         'maxLineSize' => 3000,
+        'removeBom' => false,
     ];
 
 
@@ -144,8 +145,15 @@ class CsvDriver extends DatafileDriver
             $endingColumn = count($headerLine);
         }
 
-        for ($i = $this->startingColumn;$i<$endingColumn;$i++) {
-            $this->headerData[] = Arr::get($headerLine,$i,'');
+        if ($this->removeBom) {
+            $bom = pack('H*','EFBBBF');
+            for ($i = $this->startingColumn;$i<$endingColumn;$i++) {
+                $this->headerData[] = preg_replace("/^$bom/", '', Arr::get($headerLine,$i,''));
+            }
+        } else {
+            for ($i = $this->startingColumn;$i<$endingColumn;$i++) {
+                $this->headerData[] = Arr::get($headerLine,$i,'');
+            }
         }
 
         fclose($fp);
@@ -157,14 +165,14 @@ class CsvDriver extends DatafileDriver
             return $this->nRows;
         }
 
-            $fsize = filesize($this->dataFile);
-            $rowsize = $this->getRowByteSize();
-            if (!$rowsize) {
-                $rowsize = 300;
-            }
-            $numRows = floor($fsize/$rowsize);
-            $this->nRows = $numRows;
-            return $numRows;
+        $fsize = filesize($this->dataFile);
+        $rowsize = $this->getRowByteSize();
+        if (!$rowsize) {
+            $rowsize = 300;
+        }
+        $numRows = floor($fsize/$rowsize);
+        $this->nRows = $numRows;
+        return $numRows;
         // TODO: Implement getDatafileNumRows() method.
     }
 
