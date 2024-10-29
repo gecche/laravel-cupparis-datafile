@@ -9,6 +9,7 @@ use Gecche\Cupparis\Datafile\Breeze\Contracts\DatafileBreezeInterface;
 use Gecche\Cupparis\Datafile\DatafileHandler;
 use Gecche\Cupparis\Datafile\DatafileProviderInterface;
 use Gecche\Cupparis\Datafile\Facades\Datafile;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -81,6 +82,8 @@ class BreezeDatafileProvider implements DatafileProviderInterface
     protected $stringRowIndexInDb = false;
 
     protected $currentSheet;
+
+    protected $useTransactions = true;
 
 
     public function __construct()
@@ -256,6 +259,22 @@ class BreezeDatafileProvider implements DatafileProviderInterface
         return $this->inputEncoding;
     }
 
+    /**
+     * @return bool
+     */
+    public function useTransactions(): bool
+    {
+        return $this->useTransactions;
+    }
+
+    /**
+     * @param bool $useTransactions
+     */
+    public function setUseTransactions(bool $useTransactions): void
+    {
+        $this->useTransactions = $useTransactions;
+    }
+
 
 
     public function isRowEmpty($row)
@@ -292,7 +311,7 @@ class BreezeDatafileProvider implements DatafileProviderInterface
 //        Log::info("Index: " . $index);
         $model->fill($row);
         $model->setDatafileIdValue($this->getDatafileId());
-        Log::info("Sheet:: ".$sheet);
+//        Log::info("Sheet:: ".$sheet);
         $model->setDatafileSheetValue($sheet);
         $model->setRowIndexValue($index);
 
@@ -333,7 +352,7 @@ class BreezeDatafileProvider implements DatafileProviderInterface
         $modelTarget = $this->associateRow($modelDatafile);
 
         //trasformazione dei valori eventualmente
-        $values = $this->formatRow($modelDatafile);
+        $values = $this->formatRow($modelDatafile, $modelTarget);
 
 
 //        Log::info('VALUES: '.print_r($values,true));
@@ -348,7 +367,7 @@ class BreezeDatafileProvider implements DatafileProviderInterface
         return true;
     }
 
-    public function associateRow(BreezeDatafileInterface $modelDatafile)
+    public function associateRow(BreezeDatafileInterface $modelDatafile, Model $modelTarget = null)
     {
         return new $this->modelTargetName;
     }

@@ -118,7 +118,8 @@ trait BreezeDatafileTrait {
      */
     public function setDatafileSheetValue($datafileSheetValue)
     {
-        Log::info("SETDATAFILESHEETVALUE:: ". $this->datafile_sheet_field . ' --- ' . $datafileSheetValue);
+
+        //Log::info("SETDATAFILESHEETVALUE:: ". $this->datafile_sheet_field . ' --- ' . $datafileSheetValue);
         $this->{$this->datafile_sheet_field} = $datafileSheetValue;
     }
 
