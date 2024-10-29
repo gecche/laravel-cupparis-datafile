@@ -57,7 +57,6 @@ class DatafileManager
     protected $events = null;
 
 
-
     public function __construct(Dispatcher $dispatcher)
     {
         $this->events = $dispatcher;
@@ -115,7 +114,8 @@ class DatafileManager
         $this->datafileProvider->setFilename($this->filename);
     }
 
-    public function getDatafile() {
+    public function getDatafile()
+    {
         return $this->datafileProvider->getDatafile();
     }
 
@@ -263,27 +263,41 @@ class DatafileManager
 //        Log::info("SAVEROWS: " . $totalRows . '-' . $index . '-' . $firstRow);
         //TODO: cercare un errore se bloccante
 
-        DB::beginTransaction();
-        //TODO: transazione
+        if ($this->datafileProvider->useTransactions()) {
+
+            DB::beginTransaction();
+            //TODO: transazione
+            try {
+                $this->saveBlock($index, $block, $firstRow, $totalRows);
+            } catch (\Throwable $e) {
+                DB::rollback();
+                throw $e;
+            }
+            DB::commit();
+        } else {
+            $this->saveBlock($index, $block, $firstRow, $totalRows);
+        }
+
+    }
+
+    protected function saveBlock($index, $block, $firstRow, $totalRows)
+    {
         try {
             while ($index < $totalRows) {
-//                echo $index . "\n";
+                //                echo $index . "\n";
                 $this->datafileProvider->saveRow($this->getCurrentSheet(true), $firstRow + $index);
                 if ($index % $block == 0) {
                     $this->fireProgress($firstRow + $index, $totalRows);
-                    echo "row " . ($firstRow + $index) . "\n";
+                    //echo "row " . ($firstRow + $index) . "\n";
                 }
                 $index++;
             }
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             //TODO: rollback
             echo $e->getMessage();
             echo $e->getTraceAsString();
-            DB::rollback();
             throw $e;
         }
-        DB::commit();
-
     }
 
     public function fireProgress($index, $rows)
@@ -317,15 +331,18 @@ class DatafileManager
      * FUNZIONI CHE HANNO SENSO PER I PROVIDER DI TIPO EXCEL
      */
 
-    public function getSheetsNames($loaded = false) {
+    public function getSheetsNames($loaded = false)
+    {
         return $this->datafileProvider->getSheetsNames($loaded);
     }
 
-    public function setCurrentSheet($sheetName,$fileProperties = null,$loaded = false) {
-        return $this->datafileProvider->setCurrentSheet($sheetName,$fileProperties,$loaded);
+    public function setCurrentSheet($sheetName, $fileProperties = null, $loaded = false)
+    {
+        return $this->datafileProvider->setCurrentSheet($sheetName, $fileProperties, $loaded);
     }
 
-    public function getCurrentSheet($loaded = false) {
+    public function getCurrentSheet($loaded = false)
+    {
         return $this->datafileProvider->getCurrentSheet($loaded);
     }
 
