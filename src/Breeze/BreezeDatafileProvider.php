@@ -367,7 +367,7 @@ class BreezeDatafileProvider implements DatafileProviderInterface
         return true;
     }
 
-    public function associateRow(BreezeDatafileInterface $modelDatafile, Model $modelTarget = null)
+    public function associateRow(BreezeDatafileInterface $modelDatafile)
     {
         return new $this->modelTargetName;
     }
@@ -377,7 +377,7 @@ class BreezeDatafileProvider implements DatafileProviderInterface
         return $row;
     }
 
-    public function formatRow(BreezeDatafileInterface $modelDatafile)
+    public function formatRow(BreezeDatafileInterface $modelDatafile, Model $modelTarget = null)
     {
         $values = $modelDatafile->toArray();
         foreach ($this->excludeFromFormat as $field) {
