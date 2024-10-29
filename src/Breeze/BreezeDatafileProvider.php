@@ -9,6 +9,7 @@ use Gecche\Cupparis\Datafile\Breeze\Contracts\DatafileBreezeInterface;
 use Gecche\Cupparis\Datafile\DatafileHandler;
 use Gecche\Cupparis\Datafile\DatafileProviderInterface;
 use Gecche\Cupparis\Datafile\Facades\Datafile;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -351,7 +352,7 @@ class BreezeDatafileProvider implements DatafileProviderInterface
         $modelTarget = $this->associateRow($modelDatafile);
 
         //trasformazione dei valori eventualmente
-        $values = $this->formatRow($modelDatafile);
+        $values = $this->formatRow($modelDatafile, $modelTarget);
 
 
 //        Log::info('VALUES: '.print_r($values,true));
@@ -366,7 +367,7 @@ class BreezeDatafileProvider implements DatafileProviderInterface
         return true;
     }
 
-    public function associateRow(BreezeDatafileInterface $modelDatafile)
+    public function associateRow(BreezeDatafileInterface $modelDatafile, Model $modelTarget = null)
     {
         return new $this->modelTargetName;
     }
