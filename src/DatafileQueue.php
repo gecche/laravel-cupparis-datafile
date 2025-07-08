@@ -119,7 +119,10 @@ class DatafileQueue extends MainQueue
 
     protected function filenameToTempFolder($filename, $userId)
     {
-        Auth::loginUsingId($userId);
+        $user = Auth::user();
+        if (!$user) {
+            Auth::loginUsingId($userId);
+        }
         $temp_dir = storage_temp_path();
 //			echo $temp_dir;
         if (!is_dir($temp_dir)) {
