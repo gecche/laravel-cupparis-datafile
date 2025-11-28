@@ -258,7 +258,7 @@ class DatafileManager
         $index = 0;
         $firstRow = $this->datafileProvider->getFirstRow();
 
-        echo 'save : begin ' . $firstRow . " total rows " . $totalRows . "\n";
+        //echo 'save : begin ' . $firstRow . " total rows " . $totalRows . "\n";
 
 //        Log::info("SAVEROWS: " . $totalRows . '-' . $index . '-' . $firstRow);
         //TODO: cercare un errore se bloccante
