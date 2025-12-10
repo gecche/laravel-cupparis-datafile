@@ -16,12 +16,14 @@ class DatafileQueue extends MainQueue
     {
         $this->jobStart($job, $data, 'datafile_load');
         try {
+
             $this->validateData("datafile_load");
+            $this->ensureUser(Arr::get($data, 'userId'));
 
             $filename = Arr::get($this->data, 'fileName');
 
             if (Arr::get($this->data, 'fileInTempFolder', true)) {
-                $filename = $this->filenameToTempFolder($filename, Arr::get($data, 'userId'));
+                $filename = $this->filenameToTempFolder($filename);
             }
 
             $datafileProviderName = Arr::get($this->data, 'datafileProviderName');
@@ -69,6 +71,8 @@ class DatafileQueue extends MainQueue
         try {
 
             $this->validateData("datafile_save");
+            $this->ensureUser(Arr::get($data, 'userId'));
+
 
             $datafileProviderName = Arr::get($this->data, 'datafileProviderName');
             $datafileProviderName = $this->resolveProviderName($datafileProviderName);
@@ -117,12 +121,8 @@ class DatafileQueue extends MainQueue
     }
 
 
-    protected function filenameToTempFolder($filename, $userId)
+    protected function filenameToTempFolder($filename)
     {
-        $user = Auth::user();
-        if (!$user) {
-        Auth::loginUsingId($userId);
-        }
         $temp_dir = storage_temp_path();
 //			echo $temp_dir;
         if (!is_dir($temp_dir)) {
@@ -138,5 +138,12 @@ class DatafileQueue extends MainQueue
     {
         $providerInConfig = Arr::get(Config::get('cupparis-datafile.providers', []), $datafileProviderName);
         return $providerInConfig ?: $datafileProviderName;
+    }
+
+    protected function ensureUser($userId) {
+        $user = Auth::user();
+        if (!$user) {
+            Auth::loginUsingId($userId);
+        }
     }
 }
