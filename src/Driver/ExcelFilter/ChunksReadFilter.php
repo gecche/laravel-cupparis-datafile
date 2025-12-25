@@ -45,14 +45,14 @@ class ChunksReadFilter implements IReadFilter {
     /**
      * Should this cell be read?
      *
-     * @param    $column        String column index
+     * @param    $columnAddress        String column index
      * @param    $row            Row index
      * @param    $worksheetName    Optional worksheet name
      * @return    boolean
      */
-    public function readCell($column, $row, $worksheetName = '')
+    public function readCell(string $columnAddress, int $row, string $worksheetName = ''): bool
     {
-        $column = Coordinate::columnIndexFromString($column);
+        $column = Coordinate::columnIndexFromString($columnAddress);
         $rowOk = $row >= $this->startRow && $row <= $this->endRow && (!$this->finalRow || $row <= $this->finalRow);
         if (!$rowOk) {
             return false;
